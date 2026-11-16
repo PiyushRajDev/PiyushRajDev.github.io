@@ -2,28 +2,32 @@
 
 https://piyushrajdev.github.io/
 
-## Live audio spectrogram terrain
+## Live audio spectrogram ridgelines
 
-The hero visual is a 3D ridgeline built with the repository's existing React Three Fiber + Three.js stack. Each row is a time slice of an FFT spectrum: frequency is mapped logarithmically across X (80 Hz–8 kHz), time scrolls into Z, and amplitude becomes height on Y. The field uses fixed `BufferGeometry` attributes and one shader-driven points draw call; a rolling FFT buffer is updated in place rather than allocating geometry per frame.
+The hero visual is a 2D canvas ridgeline plot. Every row is one FFT time-slice across a logarithmic frequency axis (80 Hz–8 kHz). The newest frame is inserted at the front; older frames shift deeper into the plot. Rows are drawn back-to-front, filled with the page background token to mask farther traces, then stroked in the foreground token. Only line segments above the peak threshold use the accent token.
 
-The default signal is procedural and speech-like: moving formant bands, syllable-like amplitude envelopes, harmonic energy, fricative energy and pauses. The microphone path uses the same `SignalSource → rolling FFT → terrain renderer` pipeline. Microphone access is opt-in through the `TALK` button, uses a 2048-point `AnalyserNode` with 0.78 smoothing, and never connects the microphone source to the audio destination.
+The default signal is procedural and speech-like: moving formant bands, syllable envelopes, harmonic/fricative energy and deliberate pauses. The microphone path uses the same `SignalSource → RollingFFTBuffer → Canvas renderer` pipeline. Microphone access is opt-in through the `TALK` button, uses a 2048-point `AnalyserNode` with 0.78 smoothing, and never connects microphone audio to the output destination.
 
 ### Tunable constants
 
 | Constant | Current value | Purpose |
 | --- | ---: | --- |
-| `SPECTRUM_BINS` | 80 | Log-spaced frequency columns |
-| `TERRAIN_ROWS` | 56 | Time slices kept in the rolling depth buffer |
+| `SPECTRUM_BINS` | 88 | Log-spaced frequency columns |
+| `TERRAIN_ROWS` | 44 | Time slices retained in the scrolling depth buffer |
 | `MIN_FREQUENCY` | 80 Hz | Lower voice-analysis bound |
 | `MAX_FREQUENCY` | 8 kHz | Upper voice-analysis bound |
-| `PEAK_THRESHOLD` | 0.72 | Switches points from ink to accent |
+| `PEAK_THRESHOLD` | 0.72 | Switches above-threshold line segments to the accent token |
+| `FRAME_INTERVAL_MS` | 33.3 ms | Canvas sampling cadence (about 30 frames/second) |
 | `fftSize` | 2048 | Web Audio FFT window |
 | `smoothingTimeConstant` | 0.78 | Temporal smoothing for live mic data |
+| `MAX_PIXEL_RATIO` | 1.75 | Canvas backing-store pixel-ratio cap |
 
-### Performance and fallback behavior
+### Rendering and lifecycle
 
-- Rendering pauses when the hero leaves the viewport through `IntersectionObserver`.
-- Device pixel ratio is capped at 1.75 and the WebGL renderer requests low-power mode.
-- Reduced-motion users, small/low-power devices, and browsers without WebGL get a static SVG version of the same ridgeline pattern.
-- Theme changes are read from the existing `--ink` and `--accent` CSS tokens, so the terrain follows the existing light/dark toggle.
+- Canvas uses a 2D context; no Three.js, WebGL, external models or new runtime dependencies are required.
+- The rolling FFT array is updated in place. The canvas is redrawn at about 30 fps while visible.
+- Rendering pauses when the hero leaves the viewport or the document tab is hidden.
+- A `prefers-reduced-motion` setting, small viewport, or low-power device renders one static frame.
+- Canvas redraws use the existing `--paper`, `--ink`, `--accent` and `--secondary` CSS tokens, so the light/dark theme toggle updates the field and its axis.
 - Microphone tracks are stopped and the `AudioContext` is closed when TALK is switched off or the component unmounts.
+- No microphone permission is requested on page load. The mic is never played through the speakers.

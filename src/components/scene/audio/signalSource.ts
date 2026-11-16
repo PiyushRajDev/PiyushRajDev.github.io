@@ -1,5 +1,5 @@
-export const SPECTRUM_BINS = 80;
-export const TERRAIN_ROWS = 56;
+export const SPECTRUM_BINS = 88;
+export const TERRAIN_ROWS = 44;
 export const MIN_FREQUENCY = 80;
 export const MAX_FREQUENCY = 8000;
 export const PEAK_THRESHOLD = 0.72;
@@ -40,7 +40,10 @@ const SYLLABLES = [
 const SYNTH_CYCLE = 8.4;
 
 function wrappedDistance(time: number, center: number) {
-  const delta = Math.abs(((time - center + SYNTH_CYCLE / 2) % SYNTH_CYCLE) - SYNTH_CYCLE / 2);
+  const delta = Math.abs(
+    ((time - center + SYNTH_CYCLE / 2) % SYNTH_CYCLE) -
+      SYNTH_CYCLE / 2,
+  );
   return delta;
 }
 
@@ -149,10 +152,12 @@ export class MicrophoneSignalSource implements SignalSource {
         analyser.frequencyBinCount * Float32Array.BYTES_PER_ELEMENT,
       ),
     );
+
     this.indexes = FREQUENCIES.map((frequency) => {
       const exactIndex =
         (frequency / context.sampleRate) * analyser.fftSize;
       const lower = Math.floor(exactIndex);
+
       return {
         lower,
         upper: Math.min(lower + 1, analyser.frequencyBinCount - 1),
@@ -181,8 +186,10 @@ export class MicrophoneSignalSource implements SignalSource {
       video: false,
     });
 
+    let context: AudioContext | null = null;
+
     try {
-      const context = new AudioContext();
+      context = new AudioContext();
       const analyser = context.createAnalyser();
 
       analyser.fftSize = 2048;
@@ -200,6 +207,11 @@ export class MicrophoneSignalSource implements SignalSource {
       return new MicrophoneSignalSource(context, analyser, stream);
     } catch (error) {
       stream.getTracks().forEach((track) => track.stop());
+
+      if (context && context.state !== "closed") {
+        await context.close().catch(() => undefined);
+      }
+
       throw error;
     }
   }
