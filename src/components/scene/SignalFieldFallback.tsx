@@ -1,49 +1,63 @@
-const COLUMNS = 36;
-const ROWS = 20;
+"use client";
 
-function wave(x: number, y: number) {
-  const envelope = 0.24 + 0.76 * (1 - Math.pow(Math.abs(y) / 1.7, 1.7));
-  return (
-    (Math.sin(x * 1.45) * 0.28 +
-      Math.sin(x * 3.1 + y * 0.8) * 0.1 +
-      Math.sin(x * 5.2 - y * 1.4) * 0.035) *
-    envelope
-  );
-}
+import { useMemo } from "react";
+import {
+  SPECTRUM_BINS,
+  TERRAIN_ROWS,
+  createSynthSignalSource,
+} from "./audio/signalSource";
 
 export function SignalFieldFallback() {
-  const points = Array.from({ length: COLUMNS * ROWS }, (_, index) => {
-    const column = index % COLUMNS;
-    const row = Math.floor(index / COLUMNS);
-    const x = (column / (COLUMNS - 1)) * 760;
-    const yBase = (row / (ROWS - 1)) * 320;
-    const normalizedX = column / (COLUMNS - 1) * 7 - 3.5;
-    const normalizedY = row / (ROWS - 1) * 3.4 - 1.7;
-    const y = yBase - wave(normalizedX, normalizedY) * 72;
-    return {
-      key: index,
-      x,
-      y,
-      accent: Math.sin(normalizedX * 1.45) > 0.82 && index % 12 === 0,
-      opacity: 0.45 + (1 - Math.abs(normalizedY) / 2) * 0.5,
-    };
-  });
+  const points = useMemo(() => {
+    const source = createSynthSignalSource();
+    const frame = new Float32Array(SPECTRUM_BINS);
+    const rows: {
+      key: number;
+      x: number;
+      y: number;
+      accent: boolean;
+    }[] = [];
+
+    for (let row = TERRAIN_ROWS - 1; row >= 0; row -= 1) {
+      source.read(frame, -row * 0.055);
+
+      for (let bin = 0; bin < SPECTRUM_BINS; bin += 1) {
+        const x = (bin / (SPECTRUM_BINS - 1)) * 760;
+        const depth = row / (TERRAIN_ROWS - 1);
+        const baseline = 24 + depth * 252;
+        const amplitude = Math.pow(frame[bin], 0.9);
+        const y = baseline - amplitude * (52 - depth * 18);
+
+        rows.push({
+          key: row * SPECTRUM_BINS + bin,
+          x,
+          y,
+          accent: frame[bin] >= 0.72,
+        });
+      }
+    }
+
+    return rows;
+  }, []);
 
   return (
     <svg
       className="signal-field-fallback"
-      viewBox="0 0 760 320"
+      viewBox="0 0 760 300"
       role="img"
-      aria-label="A static field of points arranged in a layered voice-wave pattern"
+      aria-label="Static voice-spectrum terrain"
     >
       {points.map((point) => (
         <circle
           key={point.key}
           cx={point.x}
           cy={point.y}
-          r={point.accent ? 2.8 : 2.2}
-          opacity={point.opacity}
-          className={point.accent ? "signal-field__accent" : "signal-field__point"}
+          r={point.accent ? 1.8 : 1.15}
+          className={
+            point.accent
+              ? "signal-field__accent"
+              : "signal-field__point"
+          }
         />
       ))}
     </svg>
