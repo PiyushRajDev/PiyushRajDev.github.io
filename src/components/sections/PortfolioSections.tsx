@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { identity } from "@/data/identity";
 import { projects } from "@/data/projects";
 
 type SectionIntroProps = {
   index: string;
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function SectionIntro({ index, label, children }: SectionIntroProps) {
