@@ -40,6 +40,10 @@ export const metadata: Metadata = {
   description:
     "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
   metadataBase: new URL("https://piyushrajdev.github.io"),
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+  },
   openGraph: {
     title: "Piyush Raj — Backend Systems Engineer",
     description:
@@ -53,6 +57,7 @@ export const metadata: Metadata = {
     title: "Piyush Raj — Backend Systems Engineer",
     description:
       "Engineering systems where latency, state, concurrency and failure are part of the design.",
+    images: ["/opengraph-image"],
   },
 };
 
