@@ -35,6 +35,7 @@
 
 html {
   min-width: 320px;
+  overflow-x: clip;
   background: var(--paper);
   color: var(--ink);
   scroll-behavior: auto;
@@ -43,6 +44,7 @@ html {
 
 body {
   min-width: 320px;
+  overflow-x: clip;
   margin: 0;
   background: var(--paper);
   color: var(--ink);
@@ -147,7 +149,7 @@ button {
 
 .spec-mark span {
   padding-inline: 4px;
-  color: var(--accent);
+  color: var(--ink);
 }
 
 .spec-header__meta,
@@ -208,9 +210,10 @@ button {
 .theme-toggle__indicator {
   width: 8px;
   height: 8px;
-  border: 1px solid var(--ink);
+  border: 0;
   border-radius: 50%;
   background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ink);
 }
 
 .theme-toggle[aria-pressed="true"] .theme-toggle__indicator {
@@ -223,8 +226,9 @@ button {
 
 .palette-trigger kbd {
   padding: 5px 8px;
-  border: 1px solid var(--hairline);
+  border: 0;
   border-radius: 2px;
+  background: color-mix(in srgb, var(--ink) 7%, var(--paper));
   font: inherit;
   letter-spacing: 0.02em;
 }
@@ -404,8 +408,9 @@ button {
 .signal-field {
   width: 112%;
   height: 112%;
-  max-width: none;
+  max-width: calc(100vw - 32px);
   overflow: visible;
+  pointer-events: auto;
   mask-image: radial-gradient(
     ellipse 72% 70% at 50% 50%,
     #000 30%,
@@ -1124,6 +1129,7 @@ button {
   .signal-field {
     width: 112%;
     height: 120%;
+    max-width: calc(100vw - 32px);
   }
 
   .hero-data-strip {
