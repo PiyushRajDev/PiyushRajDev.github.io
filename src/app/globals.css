@@ -283,7 +283,7 @@ button {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(8px, 2.2vw, 34px);
-  min-height: min(62vh, 700px);
+  min-height: min(70vh, 700px);
   padding-block: clamp(28px, 4.5vh, 56px) 18px;
 }
 
