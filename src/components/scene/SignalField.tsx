@@ -171,7 +171,7 @@ function TerrainPoints({ active, source }: TerrainPointsProps) {
     const buffer = bufferRef.current;
     if (!buffer) return;
 
-    source.read(frameRef.current, state.elapsed);
+    source.read(frameRef.current, state.clock.elapsedTime);
     buffer.push(frameRef.current);
 
     const heights = geometry.getAttribute("aHeight") as THREE.BufferAttribute;
