@@ -398,7 +398,7 @@ button {
   z-index: 1;
   display: flex;
   min-width: 0;
-  height: clamp(360px, 43vw, 650px);
+  height: clamp(420px, 43vw, 620px);
   align-items: center;
   justify-content: center;
   overflow: visible;
@@ -407,64 +407,52 @@ button {
 
 .signal-field {
   position: relative;
-  width: 112%;
-  height: 112%;
-  max-width: calc(100vw - 32px);
-  overflow: visible;
-  pointer-events: auto;
-}
-
-.signal-field__canvas {
   width: 100%;
   height: 100%;
+  min-height: 420px;
   overflow: visible;
-  mask-image: radial-gradient(
-    ellipse 72% 70% at 50% 50%,
-    var(--ink) 30%,
-    color-mix(in srgb, var(--ink) 88%, transparent) 58%,
-    color-mix(in srgb, var(--ink) 48%, transparent) 78%,
-    transparent 100%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 72% 70% at 50% 50%,
-    var(--ink) 30%,
-    color-mix(in srgb, var(--ink) 88%, transparent) 58%,
-    color-mix(in srgb, var(--ink) 48%, transparent) 78%,
-    transparent 100%
-  );
+  pointer-events: auto;
+  font-family: var(--mono);
 }
 
-.signal-field__canvas canvas,
-.signal-field-fallback {
+.signal-field__canvas,
+.signal-field__surface {
+  position: absolute;
+  inset: 0;
   display: block;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
+}
+
+.signal-field__surface {
   overflow: visible;
 }
 
-.signal-field-fallback {
-  color: var(--ink);
-}
-
-.signal-field__point {
-  fill: var(--ink);
-}
-
-.signal-field__accent {
-  fill: var(--accent);
+.signal-field__time-label {
+  position: absolute;
+  top: 25%;
+  right: 3px;
+  color: var(--secondary);
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  pointer-events: none;
 }
 
 .signal-field__controls {
   position: absolute;
-  right: 2%;
-  bottom: 3%;
+  right: 0;
+  bottom: 42px;
   z-index: 3;
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: calc(100% - 24px);
   padding: 6px 8px;
   border: 1px solid var(--hairline);
-  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  color: var(--ink);
   font: 500 11px/1.3 var(--mono);
   letter-spacing: 0.08em;
   backdrop-filter: blur(6px);
@@ -507,13 +495,27 @@ button {
 }
 
 @media (max-width: 767px) {
+  .hero-visual {
+    height: clamp(350px, 82vw, 460px);
+  }
+
+  .signal-field {
+    min-height: 350px;
+  }
+
   .signal-field__controls {
     right: 0;
-    bottom: 0;
+    bottom: 40px;
+    gap: 8px;
   }
 
   .signal-field__meta {
     display: none;
+  }
+
+  .signal-field__time-label {
+    right: 2px;
+    top: 20%;
   }
 }
 
