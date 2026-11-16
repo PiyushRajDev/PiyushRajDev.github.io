@@ -172,7 +172,7 @@ export function SignalFieldLoader() {
       ? `FFT ${meta.fftSize} / ${Math.round(meta.sampleRate / 1000)}kHz`
       : "LOG 80–8000Hz";
 
-  const showInteractive = !useFallback && !reducedMotion;
+  const showInteractive = !useFallback && !reducedMotion && hasBeenVisible;
 
   return (
     <div className="signal-field" ref={containerRef}>
