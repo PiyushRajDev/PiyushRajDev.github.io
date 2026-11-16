@@ -4,7 +4,7 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { forwardRef, type SVGProps, useEffect, useRef, useState } from "react";
 
-const FLIGHT_DURATION_MS = 1680;
+const FLIGHT_DURATION_MS = 3400;
 const LAUNCH_DELAY_MS = 320;
 const BIRD_WIDTH = 78;
 const BIRD_HEIGHT = 58;
@@ -53,6 +53,7 @@ export function HeroAvatarFlight() {
   const [arrived, setArrived] = useState(false);
   const [flying, setFlying] = useState(false);
   const [flightOrigin, setFlightOrigin] = useState<Point | null>(null);
+  const [flightDirection, setFlightDirection] = useState<1 | -1>(1);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia(
@@ -109,19 +110,20 @@ export function HeroAvatarFlight() {
         x: bounds.left + bounds.width / 2,
         y: bounds.top + bounds.height / 2,
       };
-
+      const direction: 1 | -1 = destination.x >= start.x ? 1 : -1;
       const dx = destination.x - start.x;
-      const lift = Math.min(190, Math.max(72, Math.abs(dx) * 0.17 + 72));
+      const lift = Math.min(112, Math.max(48, Math.abs(dx) * 0.075));
       const firstControl = {
-        x: start.x + dx * 0.22,
+        x: start.x + dx * 0.28,
         y: start.y - lift,
       };
       const secondControl = {
-        x: start.x + dx * 0.78,
-        y: destination.y - lift * 0.42,
+        x: start.x + dx * 0.72,
+        y: destination.y - lift,
       };
 
       setFlightOrigin(start);
+      setFlightDirection(direction);
       setFlying(true);
 
       const startedAt = performance.now();
@@ -133,6 +135,7 @@ export function HeroAvatarFlight() {
           1,
           (now - startedAt) / FLIGHT_DURATION_MS,
         );
+        // Smooth acceleration/deceleration; the bird's body stays level.
         const t = progress * progress * (3 - 2 * progress);
         const u = 1 - t;
 
@@ -142,27 +145,19 @@ export function HeroAvatarFlight() {
           3 * u * t * t * secondControl.x +
           t * t * t * destination.x;
 
-        const y =
+        const curveY =
           u * u * u * start.y +
           3 * u * u * t * firstControl.y +
           3 * u * t * t * secondControl.y +
           t * t * t * destination.y;
 
-        const tangentX =
-          3 * u * u * (firstControl.x - start.x) +
-          6 * u * t * (secondControl.x - firstControl.x) +
-          3 * t * t * (destination.x - secondControl.x);
-
-        const tangentY =
-          3 * u * u * (firstControl.y - start.y) +
-          6 * u * t * (secondControl.y - firstControl.y) +
-          3 * t * t * (destination.y - secondControl.y);
-
-        const angle = Math.atan2(tangentY, tangentX) * (180 / Math.PI);
+        // A small, slow bob makes it read as powered flight rather than a dive.
+        const bob = Math.sin(progress * Math.PI * 4) * 5;
+        const y = curveY + bob;
 
         if (birdRef.current) {
           birdRef.current.style.transform =
-            `translate3d(${x - BIRD_WIDTH / 2}px, ${y - BIRD_HEIGHT / 2}px, 0) rotate(${angle}deg)`;
+            `translate3d(${x - BIRD_WIDTH / 2}px, ${y - BIRD_HEIGHT / 2}px, 0) scaleX(${direction})`;
         }
 
         if (progress < 1) {
@@ -206,7 +201,7 @@ export function HeroAvatarFlight() {
             <PigeonFlight
               ref={birdRef}
               style={{
-                transform: `translate3d(${flightOrigin.x - BIRD_WIDTH / 2}px, ${flightOrigin.y - BIRD_HEIGHT / 2}px, 0)`,
+                transform: `translate3d(${flightOrigin.x - BIRD_WIDTH / 2}px, ${flightOrigin.y - BIRD_HEIGHT / 2}px, 0) scaleX(${flightDirection})`,
               }}
             />,
             document.body,
