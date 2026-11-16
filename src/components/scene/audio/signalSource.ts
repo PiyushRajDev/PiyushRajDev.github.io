@@ -133,7 +133,7 @@ export class MicrophoneSignalSource implements SignalSource {
   private readonly analyser: AnalyserNode;
   private readonly context: AudioContext;
   private readonly stream: MediaStream;
-  private readonly data: Float32Array;
+  private readonly data: Float32Array<ArrayBuffer>;
   private readonly indexes: IndexedFrequency[];
 
   private constructor(
@@ -144,7 +144,11 @@ export class MicrophoneSignalSource implements SignalSource {
     this.context = context;
     this.analyser = analyser;
     this.stream = stream;
-    this.data = new Float32Array(analyser.frequencyBinCount);
+    this.data = new Float32Array(
+      new ArrayBuffer(
+        analyser.frequencyBinCount * Float32Array.BYTES_PER_ELEMENT,
+      ),
+    );
     this.indexes = FREQUENCIES.map((frequency) => {
       const exactIndex =
         (frequency / context.sampleRate) * analyser.fftSize;
