@@ -733,10 +733,6 @@ button {
     min-height: 250px;
   }
 
-  .network-node-label {
-    font-size: 9px;
-  }
-
   .hero-data-strip {
     grid-template-columns: 1fr 1fr;
   }
