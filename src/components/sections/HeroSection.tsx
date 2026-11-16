@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { identity } from "@/data/identity";
 import { useISTClock } from "@/hooks/useISTClock";
 import { SignalFieldLoader } from "@/components/scene/SignalFieldLoader";
+import { HeroAvatarFlight } from "@/components/sections/HeroAvatarFlight";
 import { CommandPalette } from "@/components/interaction/CommandPalette";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
 
@@ -90,13 +91,16 @@ export function HeroSection() {
 
         <div className="hero-main">
           <div className="hero-copy">
-            <h1 className="hero-name" aria-label={identity.name}>
-              <span className="hero-mask-line">PIYUSH</span>
-              <span className="hero-name__line">
-                <span className="hero-mask-line">RAJ</span>
-                <span className="hero-name__square" aria-hidden="true" />
-              </span>
-            </h1>
+            <div className="hero-name-row">
+              <HeroAvatarFlight />
+              <h1 className="hero-name" aria-label={identity.name}>
+                <span className="hero-mask-line">PIYUSH</span>
+                <span className="hero-name__line">
+                  <span className="hero-mask-line">RAJ</span>
+                  <span className="hero-name__square" aria-hidden="true" />
+                </span>
+              </h1>
+            </div>
 
             <p className="hero-role hero-meta-reveal">
               Backend systems engineer building real-time systems.
