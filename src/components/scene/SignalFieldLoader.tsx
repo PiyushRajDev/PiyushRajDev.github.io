@@ -54,6 +54,7 @@ function getReducedMotionPreference() {
 
 export function SignalFieldLoader() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(true);
   const synthRef = useRef(createSynthSignalSource());
   const micRef = useRef<MicrophoneSignalSource | null>(null);
 
@@ -76,8 +77,23 @@ export function SignalFieldLoader() {
     );
 
     const updateEnvironment = () => {
-      setReducedMotion(motionPreference.matches);
-      setUseFallback(shouldUseStaticMode());
+      const nextReducedMotion = motionPreference.matches;
+      const nextStaticMode = shouldUseStaticMode();
+
+      setReducedMotion(nextReducedMotion);
+      setUseFallback(nextStaticMode);
+
+      if (nextStaticMode && micRef.current) {
+        const mic = micRef.current;
+        micRef.current = null;
+        void mic.dispose();
+
+        if (mountedRef.current) {
+          setMode("sim");
+          setStatus("sim");
+          setMeta(synthRef.current.meta);
+        }
+      }
     };
 
     motionPreference.addEventListener("change", updateEnvironment);
@@ -97,14 +113,11 @@ export function SignalFieldLoader() {
     if (observer && element) observer.observe(element);
 
     return () => {
+      mountedRef.current = false;
       motionPreference.removeEventListener("change", updateEnvironment);
       window.removeEventListener("resize", updateEnvironment);
       observer?.disconnect();
-    };
-  }, []);
 
-  useEffect(() => {
-    return () => {
       const mic = micRef.current;
       micRef.current = null;
       void mic?.dispose();
@@ -112,12 +125,15 @@ export function SignalFieldLoader() {
   }, []);
 
   const handleMicToggle = async () => {
-    if (pending) return;
+    if (pending || !mountedRef.current) return;
 
     if (micRef.current) {
       const mic = micRef.current;
       micRef.current = null;
       await mic.dispose();
+
+      if (!mountedRef.current) return;
+
       setMode("sim");
       setStatus("sim");
       setMeta(synthRef.current.meta);
@@ -128,16 +144,24 @@ export function SignalFieldLoader() {
 
     try {
       const mic = await MicrophoneSignalSource.create();
+
+      if (!mountedRef.current) {
+        await mic.dispose();
+        return;
+      }
+
       micRef.current = mic;
       setMode("live");
       setStatus("live");
       setMeta(mic.meta);
     } catch {
+      if (!mountedRef.current) return;
+
       setStatus("denied");
       setMode("sim");
       setMeta(synthRef.current.meta);
     } finally {
-      setPending(false);
+      if (mountedRef.current) setPending(false);
     }
   };
 
