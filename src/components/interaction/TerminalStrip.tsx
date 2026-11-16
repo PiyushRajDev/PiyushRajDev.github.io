@@ -8,7 +8,7 @@ type TerminalLine = {
   response: string;
 };
 
-const COMMANDS = ["about", "projects", "contact"];
+const COMMANDS = ["about", "projects", "systems", "thinking", "contact"];
 
 export function TerminalStrip() {
   const [value, setValue] = useState("");
@@ -28,7 +28,7 @@ export function TerminalStrip() {
     let response: string;
 
     if (command === "help") {
-      response = "AVAILABLE: about · projects · contact · resume · clear";
+      response = "AVAILABLE: about · projects · systems · thinking · contact · resume · clear";
     } else if (command === "whoami") {
       response = "PIYUSH RAJ / BACKEND SYSTEMS ENGINEER / INDIA";
     } else if (command === "time") {
@@ -38,14 +38,14 @@ export function TerminalStrip() {
         timeStyle: "long",
       }).format(new Date());
     } else if (command === "resume") {
-      response = "RESUME FILE NOT ATTACHED — [TODO: ADD public/resume.pdf]";
+      response = "RESUME PDF IS NOT PUBLISHED YET — EMAIL ME FOR A COPY.";
     } else if (COMMANDS.includes(command)) {
       const target = document.getElementById(command);
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
         response = `ROUTING TO /${command.toUpperCase()}`;
       } else {
-        response = `/${command.toUpperCase()} IS QUEUED FOR THE NEXT BUILD PHASE.`;
+        response = `/${command.toUpperCase()} IS NOT AVAILABLE IN THIS BUILD.`;
       }
       if (command === "contact" && !target) {
         response += ` EMAIL: ${identity.email}`;
