@@ -3,8 +3,6 @@ import {
   AboutSection,
   ContactSection,
   ProjectsSection,
-  SystemsSection,
-  ThinkingSection,
 } from "@/components/sections/PortfolioSections";
 
 export default function Home() {
@@ -14,8 +12,6 @@ export default function Home() {
       <div className="portfolio-document">
         <AboutSection />
         <ProjectsSection />
-        <SystemsSection />
-        <ThinkingSection />
         <ContactSection />
       </div>
     </>

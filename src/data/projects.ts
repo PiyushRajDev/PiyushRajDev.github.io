@@ -5,6 +5,7 @@ export type PortfolioProject = {
   summary: string;
   engineering: string;
   stack: readonly string[];
+  status: string;
   repository: string;
   live?: string;
 };
@@ -19,6 +20,7 @@ export const projects: readonly PortfolioProject[] = [
     engineering:
       "The core challenge is the live audio pipeline: capture, speech recognition, translation, synthesis and delivery, coordinated around room state.",
     stack: ["React", "Node.js", "WebSocket", "Gnani", "Sarvam"],
+    status: "LIVE DEMO",
     repository: "https://github.com/PiyushRajDev/vak",
     live: "https://vak-amber.vercel.app",
   },
@@ -31,6 +33,7 @@ export const projects: readonly PortfolioProject[] = [
     engineering:
       "An agent-oriented approach to social listening, trend discovery and sentiment signals, aimed at turning scattered activity into useful campaign decisions.",
     stack: ["React", "Vite", "GSAP", "AI agents", "Social signals"],
+    status: "LIVE SITE",
     repository: "https://github.com/PiyushRajDev/Oasix",
     live: "https://oasix.in",
   },
@@ -43,6 +46,7 @@ export const projects: readonly PortfolioProject[] = [
     engineering:
       "Built around explainable readiness signals, with API and worker flows for analysing project and coding evidence.",
     stack: ["TypeScript", "React", "PostgreSQL", "Prisma", "Redis", "BullMQ"],
+    status: "COLLEGE PILOT",
     repository: "https://github.com/PiyushRajDev/slh",
   },
   {
@@ -54,6 +58,7 @@ export const projects: readonly PortfolioProject[] = [
     engineering:
       "Combines a real-time media layer with spatial interaction, presence and persistent collaboration state.",
     stack: ["Next.js", "PixiJS", "LiveKit", "Express", "PostgreSQL", "WebSocket"],
+    status: "PROTOTYPE",
     repository: "https://github.com/PiyushRajDev/metaspace",
   },
   {
@@ -65,6 +70,7 @@ export const projects: readonly PortfolioProject[] = [
     engineering:
       "Uses Elasticsearch for catalog search, Redis Streams for behavioural events and PostgreSQL for persistent product data.",
     stack: ["NestJS", "PostgreSQL", "Elasticsearch", "Redis Streams", "Docker"],
+    status: "IN DEVELOPMENT",
     repository: "https://github.com/PiyushRajDev/trendy",
   },
 ] as const;

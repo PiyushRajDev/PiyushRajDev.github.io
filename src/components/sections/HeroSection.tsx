@@ -4,15 +4,14 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { identity } from "@/data/identity";
 import { useISTClock } from "@/hooks/useISTClock";
-import { NetworkSceneLoader } from "@/components/scene/NetworkSceneLoader";
-import { TerminalStrip } from "@/components/interaction/TerminalStrip";
+import { SignalFieldLoader } from "@/components/scene/SignalFieldLoader";
+import { CommandPalette } from "@/components/interaction/CommandPalette";
+import { ThemeToggle } from "@/components/shell/ThemeToggle";
 
 const navigation = [
   { label: "ABOUT", href: "#about", index: "01" },
   { label: "PROJECTS", href: "#projects", index: "02" },
-  { label: "SYSTEMS", href: "#systems", index: "03" },
-  { label: "THINKING", href: "#thinking", index: "04" },
-  { label: "CONTACT", href: "#contact", index: "05" },
+  { label: "CONTACT", href: "#contact", index: "03" },
 ];
 
 export function HeroSection() {
@@ -22,31 +21,30 @@ export function HeroSection() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
     if (reducedMotion) return;
 
     const context = gsap.context(() => {
       gsap.fromTo(
-        ".hero-mask-line",
-        { clipPath: "inset(0 0 100% 0)" },
+        ".hero-name",
+        { y: 22, opacity: 0 },
         {
-          clipPath: "inset(0 0 0% 0)",
-          duration: 0.82,
-          stagger: 0.04,
-          ease: "power3.inOut",
-          delay: 0.12,
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: "power3.out",
+          delay: 0.1,
         },
       );
-
       gsap.fromTo(
         ".hero-meta-reveal",
-        { clipPath: "inset(0 0 100% 0)" },
+        { y: 12, opacity: 0 },
         {
-          clipPath: "inset(0 0 0% 0)",
-          duration: 0.62,
-          stagger: 0.05,
-          ease: "power3.inOut",
-          delay: 0.36,
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power2.out",
+          delay: 0.25,
         },
       );
     });
@@ -56,16 +54,6 @@ export function HeroSection() {
 
   return (
     <section className="hero-paper" id="hero">
-      <div className="column-guides" aria-hidden="true">
-        {Array.from({ length: 12 }, (_, index) => (
-          <span key={index} />
-        ))}
-      </div>
-      <span className="registration registration--top-left" aria-hidden="true" />
-      <span className="registration registration--top-right" aria-hidden="true" />
-      <span className="registration registration--bottom-left" aria-hidden="true" />
-      <span className="registration registration--bottom-right" aria-hidden="true" />
-
       <div className="hero-shell">
         <header className="spec-header">
           <a className="spec-mark" href="#hero" aria-label="Piyush Raj home">
@@ -82,10 +70,14 @@ export function HeroSection() {
           <time className="spec-clock" dateTime={time}>
             {time} <span>IST</span>
           </time>
+          <div className="spec-header__actions">
+            <ThemeToggle />
+            <CommandPalette />
+          </div>
         </header>
 
         <nav className="spec-nav" aria-label="Primary navigation">
-          <span className="spec-nav__label">INDEX / 00—05</span>
+          <span className="spec-nav__label">INDEX / 00—03</span>
           <div className="spec-nav__links">
             {navigation.map((item) => (
               <a key={item.index} href={item.href}>
@@ -136,12 +128,9 @@ export function HeroSection() {
             </div>
           </div>
 
-          <aside
-            className="hero-visual"
-            aria-label="Distributed system components: Client, Edge, Redis, BullMQ queue, Worker, Postgres and Elasticsearch"
-          >
-            <NetworkSceneLoader />
-          </aside>
+          <div className="hero-visual">
+            <SignalFieldLoader />
+          </div>
         </div>
 
         <div className="hero-data-strip" aria-label="Engineering profile metadata">
@@ -162,9 +151,6 @@ export function HeroSection() {
             <strong>16 NOV 2026</strong>
           </div>
         </div>
-
-        <TerminalStrip />
-
       </div>
     </section>
   );

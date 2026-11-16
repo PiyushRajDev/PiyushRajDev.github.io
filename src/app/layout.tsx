@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/MotionProvider";
 import { ScrollProgress } from "@/components/shell/ScrollProgress";
@@ -15,6 +16,24 @@ const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
 });
+
+const themeInit = `
+(() => {
+  const root = document.documentElement;
+  try {
+    const stored = localStorage.getItem("portfolio-theme");
+    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+    const theme = stored === "light" || stored === "dark" ? stored : preferred;
+    root.classList.add("theme-" + theme);
+    root.dataset.theme = theme;
+  } catch {
+    root.classList.add("theme-light");
+    root.dataset.theme = "light";
+  }
+})();
+`;
 
 export const metadata: Metadata = {
   title: "Piyush Raj — Backend Systems Engineer",
@@ -43,7 +62,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrumentSans.variable} ${jetBrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${instrumentSans.variable} ${jetBrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <Script id="portfolio-theme-init" strategy="beforeInteractive">
+          {themeInit}
+        </Script>
+      </head>
       <body>
         <MotionProvider>
           <ScrollProgress />
