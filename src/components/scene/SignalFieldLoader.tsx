@@ -13,6 +13,7 @@ export function SignalFieldLoader() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [useFallback, setUseFallback] = useState(true);
   const [active, setActive] = useState(false);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
   useEffect(() => {
     const motionPreference = window.matchMedia(
@@ -21,7 +22,8 @@ export function SignalFieldLoader() {
 
     const updateMode = () => {
       setUseFallback(
-        motionPreference.matches || window.matchMedia("(max-width: 767px)").matches,
+        motionPreference.matches ||
+          window.matchMedia("(max-width: 767px)").matches,
       );
     };
 
@@ -32,8 +34,11 @@ export function SignalFieldLoader() {
     const element = containerRef.current;
     const observer = element
       ? new IntersectionObserver(
-          ([entry]) => setActive(entry.isIntersecting),
-          { rootMargin: "100px" },
+          ([entry]) => {
+            setActive(entry.isIntersecting);
+            if (entry.isIntersecting) setHasBeenVisible(true);
+          },
+          { rootMargin: "0px" },
         )
       : null;
 
@@ -48,7 +53,7 @@ export function SignalFieldLoader() {
 
   return (
     <div className="signal-field" ref={containerRef} aria-hidden="true">
-      {useFallback ? (
+      {useFallback || !hasBeenVisible ? (
         <SignalFieldFallback />
       ) : (
         <SignalField active={active} />
