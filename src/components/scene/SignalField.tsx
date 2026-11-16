@@ -56,7 +56,7 @@ function drawRidgelines(
   const left = 12;
   const right = Math.max(left + 80, width - 34);
   const plotTop = Math.max(18, height * 0.09);
-  const axisY = height - 29;
+  const axisY = height - 70;
   const plotBottom = axisY - 26;
   const rowGap = (plotBottom - plotTop) / Math.max(1, TERRAIN_ROWS - 1);
   const amplitudeScale = Math.max(15, Math.min(31, rowGap * 2.75));
