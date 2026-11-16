@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { identity } from "@/data/identity";
 
 type TerminalLine = {
@@ -8,7 +8,7 @@ type TerminalLine = {
   response: string;
 };
 
-const COMMANDS = ["about", "projects", "contact", "resume"];
+const COMMANDS = ["about", "projects", "contact"];
 
 export function TerminalStrip() {
   const [value, setValue] = useState("");
@@ -37,13 +37,15 @@ export function TerminalStrip() {
         dateStyle: "medium",
         timeStyle: "long",
       }).format(new Date());
+    } else if (command === "resume") {
+      response = "RESUME FILE NOT ATTACHED — [TODO: ADD public/resume.pdf]";
     } else if (COMMANDS.includes(command)) {
       const target = document.getElementById(command);
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-        response = `ROUTING TO /\${command.toUpperCase()}`;
+        response = `ROUTING TO /${command.toUpperCase()}`;
       } else {
-        response = `/\${command.toUpperCase()} IS QUEUED FOR THE NEXT BUILD PHASE.`;
+        response = `/${command.toUpperCase()} IS QUEUED FOR THE NEXT BUILD PHASE.`;
       }
       if (command === "contact" && !target) {
         response += ` EMAIL: ${identity.email}`;

@@ -11,11 +11,16 @@ export function ScrollProgress() {
     const element = progressRef.current;
     if (!element) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    if (reducedMotion) {
+      element.style.transform = "scaleY(0)";
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
 
     const tween = gsap.fromTo(
       element,
@@ -27,7 +32,7 @@ export function ScrollProgress() {
           trigger: document.documentElement,
           start: "top top",
           end: "max",
-          scrub: reducedMotion ? false : true,
+          scrub: true,
         },
       },
     );

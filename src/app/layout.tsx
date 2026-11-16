@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/MotionProvider";
 import { ScrollProgress } from "@/components/shell/ScrollProgress";
-import { identity } from "@/data/identity";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({

@@ -104,7 +104,9 @@ export function HeroSection() {
 
             <h1 className="hero-name" aria-label={identity.name}>
               <span className="hero-mask-line">PIYUSH</span>
-              <span className="hero-mask-line">RAJ<span className="hero-name__period">.</span></span>
+              <span className="hero-mask-line">
+                RAJ<span className="hero-name__period">.</span>
+              </span>
             </h1>
 
             <div className="hero-role">
@@ -169,8 +171,10 @@ export function HeroSection() {
 
         <footer className="hero-footer">
           <span>DESIGNED AS A SYSTEM / BUILT WITH INTENT</span>
-          <span>SCROLL TO INSPECT <span className="hero-footer__arrow">↓</span></span>
-          <span>COORD. 30°44′N / 76°39′E</span>
+          <span>
+            SCROLL TO INSPECT <span className="hero-footer__arrow">↓</span>
+          </span>
+          <span>DATUM. 01 / INDIA</span>
         </footer>
       </div>
     </section>

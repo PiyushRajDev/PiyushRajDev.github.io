@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Line, Points, Point } from "@react-three/drei";
+import { Line } from "@react-three/drei";
 import * as THREE from "three";
 
 const NODE_POSITIONS: [number, number, number][] = [
@@ -39,10 +39,6 @@ function NetworkGraph({
   const requestRef = useRef<THREE.Mesh>(null);
   const routeVectors = useMemo(
     () => REQUEST_PATH.map((index) => new THREE.Vector3(...NODE_POSITIONS[index])),
-    [],
-  );
-  const pointVectors = useMemo(
-    () => NODE_POSITIONS.map((position) => new THREE.Vector3(...position)),
     [],
   );
   const scratch = useMemo(
@@ -85,16 +81,6 @@ function NetworkGraph({
           opacity={0.52}
         />
       ))}
-
-      <Points positions={pointVectors} stride={3}>
-        <Point
-          color="#111111"
-          size={0.065}
-          sizeAttenuation
-          transparent
-          opacity={0.92}
-        />
-      </Points>
 
       {NODE_POSITIONS.map((position, index) => (
         <mesh key={index} position={position}>
