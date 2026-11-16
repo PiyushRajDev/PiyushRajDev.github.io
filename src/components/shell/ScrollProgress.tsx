@@ -45,9 +45,7 @@ export function ScrollProgress() {
 
   return (
     <div className="scroll-rail" aria-hidden="true">
-      <span className="scroll-rail__tick scroll-rail__tick--top" />
       <div ref={progressRef} className="scroll-rail__progress" />
-      <span className="scroll-rail__tick scroll-rail__tick--bottom" />
     </div>
   );
 }
