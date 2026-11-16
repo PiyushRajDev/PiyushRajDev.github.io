@@ -46,6 +46,8 @@ function drawRidgelines(
   height: number,
   buffer: RollingFFTBuffer,
   palette: ThemePalette,
+  fontFamily: string,
+  coordinates: Float32Array,
 ) {
   context.clearRect(0, 0, width, height);
 
@@ -75,25 +77,26 @@ function drawRidgelines(
     const rowAmplitude = amplitudeScale * (1 - depth * 0.1);
     const opacity = 0.28 + (1 - depth) * 0.64;
 
-    const coordinates = new Float32Array(SPECTRUM_BINS * 2);
+    const coordinateOffset = row * SPECTRUM_BINS * 2;
 
     for (let bin = 0; bin < SPECTRUM_BINS; bin += 1) {
       const amplitude = Math.pow(
         Math.max(0, buffer.value(row, bin)),
         0.92,
       );
-      coordinates[bin * 2] =
+      coordinates[coordinateOffset + bin * 2] =
         rowLeft + (bin / (SPECTRUM_BINS - 1)) * rowWidth;
-      coordinates[bin * 2 + 1] = baseline - amplitude * rowAmplitude;
+      coordinates[coordinateOffset + bin * 2 + 1] =
+        baseline - amplitude * rowAmplitude;
     }
 
     // The opaque paper fill is intentional: it occludes the lower part of
     // older rows, giving the plot its layered ridgeline depth.
     context.beginPath();
-    context.moveTo(coordinates[0], fillBottom);
+    context.moveTo(coordinates[coordinateOffset], fillBottom);
 
     for (let bin = 0; bin < SPECTRUM_BINS; bin += 1) {
-      context.lineTo(coordinates[bin * 2], coordinates[bin * 2 + 1]);
+      context.lineTo(coordinates[coordinateOffset + bin * 2], coordinates[coordinateOffset + bin * 2 + 1]);
     }
 
     context.lineTo(rowRight, fillBottom);
@@ -104,10 +107,10 @@ function drawRidgelines(
 
     // Base polyline.
     context.beginPath();
-    context.moveTo(coordinates[0], coordinates[1]);
+    context.moveTo(coordinates[coordinateOffset], coordinates[coordinateOffset + 1]);
 
     for (let bin = 1; bin < SPECTRUM_BINS; bin += 1) {
-      context.lineTo(coordinates[bin * 2], coordinates[bin * 2 + 1]);
+      context.lineTo(coordinates[coordinateOffset + bin * 2], coordinates[coordinateOffset + bin * 2 + 1]);
     }
 
     context.globalAlpha = opacity;
@@ -125,10 +128,10 @@ function drawRidgelines(
       );
 
       if (peak >= PEAK_THRESHOLD) {
-        context.moveTo(coordinates[bin * 2], coordinates[bin * 2 + 1]);
+        context.moveTo(coordinates[coordinateOffset + bin * 2], coordinates[coordinateOffset + bin * 2 + 1]);
         context.lineTo(
-          coordinates[(bin + 1) * 2],
-          coordinates[(bin + 1) * 2 + 1],
+          coordinates[coordinateOffset + (bin + 1) * 2],
+          coordinates[coordinateOffset + (bin + 1) * 2 + 1],
         );
       }
     }
@@ -148,7 +151,7 @@ function drawRidgelines(
   context.lineTo(right, axisY);
   context.stroke();
 
-  context.font = '10px "JetBrains Mono", monospace';
+  context.font = `10px ${fontFamily}`;
   context.textBaseline = "top";
 
   const ticks = [
@@ -190,6 +193,10 @@ export default function SignalField({
     [],
   );
   const frame = useMemo(() => new Float32Array(SPECTRUM_BINS), []);
+  const coordinateBuffer = useMemo(
+    () => new Float32Array(TERRAIN_ROWS * SPECTRUM_BINS * 2),
+    [],
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -204,15 +211,25 @@ export default function SignalField({
     let lastFrameAt = 0;
     let disposed = false;
     let palette = readPalette();
+    let fontFamily = getComputedStyle(canvas).fontFamily;
 
     const draw = () => {
-      drawRidgelines(context, width, height, buffer, palette);
+      drawRidgelines(
+        context,
+        width,
+        height,
+        buffer,
+        palette,
+        fontFamily,
+        coordinateBuffer,
+      );
     };
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
+      fontFamily = getComputedStyle(canvas).fontFamily;
       pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
 
       canvas.width = Math.max(1, Math.round(width * pixelRatio));
@@ -329,7 +346,7 @@ export default function SignalField({
         handleVisibilityChange,
       );
     };
-  }, [active, buffer, frame, source, staticMode]);
+  }, [active, buffer, coordinateBuffer, frame, source, staticMode]);
 
   return (
     <canvas
