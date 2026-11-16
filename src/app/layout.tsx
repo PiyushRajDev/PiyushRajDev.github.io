@@ -39,12 +39,12 @@ export const metadata: Metadata = {
   title: "Piyush Raj — Backend Systems Engineer",
   description:
     "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
-  metadataBase: new URL("https://portfolio-raj-piyush.vercel.app"),
+  metadataBase: new URL("https://piyushrajdev.github.io"),
   openGraph: {
     title: "Piyush Raj — Backend Systems Engineer",
     description:
       "Engineering systems where latency, state, concurrency and failure are part of the design.",
-    url: "https://portfolio-raj-piyush.vercel.app",
+    url: "https://piyushrajdev.github.io",
     siteName: "Piyush Raj",
     type: "website",
   },
