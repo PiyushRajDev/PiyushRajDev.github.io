@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 const FLIGHT_DURATION_MS = 1680;
 const LAUNCH_DELAY_MS = 320;
@@ -11,12 +11,13 @@ const BIRD_HEIGHT = 58;
 
 type Point = { x: number; y: number };
 
-function Pigeon() {
+const PigeonFlight = forwardRef<SVGSVGElement>(function PigeonFlight(_, ref) {
   return (
     <svg
+      ref={ref}
       className="pigeon-flight"
       viewBox="0 0 90 64"
-      role="presentation"
+      aria-hidden="true"
       focusable="false"
     >
       <g className="pigeon-flight__body">
@@ -41,25 +42,26 @@ function Pigeon() {
       <circle className="pigeon-flight__eye" cx="63" cy="17" r="1.25" />
     </svg>
   );
-}
+});
 
 export function HeroAvatarFlight() {
   const avatarRef = useRef<HTMLDivElement>(null);
   const birdRef = useRef<SVGSVGElement>(null);
   const [arrived, setArrived] = useState(false);
   const [flying, setFlying] = useState(false);
-  const [portalReady, setPortalReady] = useState(false);
+  const [flightOrigin, setFlightOrigin] = useState<Point | null>(null);
 
   useEffect(() => {
-    setPortalReady(true);
-
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
 
     if (reducedMotion.matches) {
-      setArrived(true);
-      return;
+      const revealFrame = window.requestAnimationFrame(() => {
+        setArrived(true);
+      });
+
+      return () => window.cancelAnimationFrame(revealFrame);
     }
 
     let pointer: Point = {
@@ -79,16 +81,14 @@ export function HeroAvatarFlight() {
     let frameId = 0;
     let cancelled = false;
 
-    const revealWithoutFlight = () => {
-      cancelled = true;
-      window.clearTimeout(launchTimer);
-      window.cancelAnimationFrame(frameId);
-      setFlying(false);
-      setArrived(true);
-    };
-
     const handleMotionChange = (event: MediaQueryListEvent) => {
-      if (event.matches) revealWithoutFlight();
+      if (event.matches) {
+        cancelled = true;
+        window.clearTimeout(launchTimer);
+        window.cancelAnimationFrame(frameId);
+        setFlying(false);
+        setArrived(true);
+      }
     };
 
     reducedMotion.addEventListener("change", handleMotionChange);
@@ -118,6 +118,7 @@ export function HeroAvatarFlight() {
         y: destination.y - lift * 0.42,
       };
 
+      setFlightOrigin(start);
       setFlying(true);
 
       const startedAt = performance.now();
@@ -158,7 +159,7 @@ export function HeroAvatarFlight() {
 
         if (birdRef.current) {
           birdRef.current.style.transform =
-            `translate3d(${x - BIRD_WIDTH / 2}px, ${y - BIRD_HEIGHT / 2}px, 0) rotate(${angle}deg) scaleX(${tangentX < 0 ? -1 : 1})`;
+            `translate3d(${x - BIRD_WIDTH / 2}px, ${y - BIRD_HEIGHT / 2}px, 0) rotate(${angle}deg)`;
         }
 
         if (progress < 1) {
@@ -186,7 +187,6 @@ export function HeroAvatarFlight() {
       <div
         ref={avatarRef}
         className={`hero-avatar${arrived ? " hero-avatar--revealed" : ""}`}
-        aria-label="Profile portrait"
       >
         <Image
           src="/piyush-avatar.webp"
@@ -198,55 +198,17 @@ export function HeroAvatarFlight() {
         />
       </div>
 
-      {portalReady && flying
+      {flying && flightOrigin
         ? createPortal(
-            <PigeonFlight ref={birdRef} />,
+            <PigeonFlight
+              ref={birdRef}
+              style={{
+                transform: `translate3d(${flightOrigin.x - BIRD_WIDTH / 2}px, ${flightOrigin.y - BIRD_HEIGHT / 2}px, 0)`,
+              }}
+            />,
             document.body,
           )
         : null}
     </>
   );
 }
-
-import { forwardRef } from "react";
-
-const PigeonFlight = forwardRef<SVGSVGElement>(function PigeonFlight(_, ref) {
-  return (
-    <div className="pigeon-flight-layer" aria-hidden="true">
-      <PigeonRef ref={ref} />
-    </div>
-  );
-});
-
-const PigeonRef = forwardRef<SVGSVGElement>(function PigeonRef(_, ref) {
-  return (
-    <svg
-      ref={ref}
-      className="pigeon-flight"
-      viewBox="0 0 90 64"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <g className="pigeon-flight__body">
-        <path d="M11 43c-2-5 0-11 5-15l-7-5 13 2c6-7 16-10 26-7 6-7 14-9 21-5 6 3 8 9 5 15 8 4 11 11 7 17-5 7-17 7-26 3-9 6-22 7-33 2-5-2-8-4-11-7Z" />
-        <path d="M12 39 2 31l14 3M14 43 4 42l12-4" />
-        <circle cx="60" cy="19" r="9" />
-        <path d="M67 18 81 22 68 26Z" className="pigeon-flight__beak" />
-      </g>
-      <path
-        className="pigeon-flight__wing"
-        d="M29 34c1-12 8-20 18-18 9 2 13 9 11 17-6-4-10-3-14 2-5 4-10 4-15-1Z"
-      />
-      <path
-        className="pigeon-flight__feathers"
-        d="m34 29 8-9m-1 12 9-9m-1 12 8-7"
-      />
-      <g className="pigeon-flight__letter">
-        <path d="M69 25h15v11H69z" />
-        <path d="m69 26 7.5 5.5L84 26" />
-        <circle cx="81" cy="34" r="1.5" />
-      </g>
-      <circle className="pigeon-flight__eye" cx="63" cy="17" r="1.25" />
-    </svg>
-  );
-});
