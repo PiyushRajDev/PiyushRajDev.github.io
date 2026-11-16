@@ -97,26 +97,21 @@ export function HeroSection() {
 
         <div className="hero-main">
           <div className="hero-copy">
-            <p className="eyebrow hero-meta-reveal">
-              <span>PERSONNEL FILE</span>
-              <span>ENGINEERING / BACKEND</span>
-            </p>
-
             <h1 className="hero-name" aria-label={identity.name}>
               <span className="hero-mask-line">PIYUSH</span>
-              <span className="hero-mask-line">
-                RAJ<span className="hero-name__period">.</span>
+              <span className="hero-name__line">
+                <span className="hero-mask-line">RAJ</span>
+                <span className="hero-name__square" aria-hidden="true" />
               </span>
             </h1>
 
-            <div className="hero-role">
-              <span className="hero-mask-line">{identity.role}</span>
-              <span className="hero-mask-line hero-role__second">
-                {identity.statement}
-              </span>
-            </div>
+            <p className="hero-role hero-meta-reveal">
+              Backend systems engineer building real-time systems.
+            </p>
 
-            <p className="hero-detail hero-meta-reveal">{identity.detail}</p>
+            <p className="hero-detail hero-meta-reveal">
+              Systems where latency, state, concurrency and failure are part of the design.
+            </p>
 
             <div className="current-build hero-meta-reveal">
               <span className="status-dot" />
@@ -129,22 +124,22 @@ export function HeroSection() {
               <a href="#projects" className="text-link">
                 INSPECT PROJECTS <span aria-hidden="true">↘</span>
               </a>
-              <a href={identity.github} target="_blank" rel="noreferrer" className="text-link">
+              <a
+                href={identity.github}
+                target="_blank"
+                rel="noreferrer"
+                className="text-link"
+              >
                 GITHUB <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
 
-          <aside className="hero-visual" aria-label="Distributed system visualization">
-            <div className="hero-visual__top">
-              <span>FIG. 01</span>
-              <span>DISTRIBUTED SYSTEM / ROUTE MAP</span>
-            </div>
+          <aside
+            className="hero-visual"
+            aria-label="Distributed system components: Client, Edge, Redis, BullMQ queue, Worker, Postgres and Elasticsearch"
+          >
             <NetworkSceneLoader />
-            <div className="hero-visual__bottom">
-              <span>EDGE → QUEUE → WORKER → STATE</span>
-              <span>LATENCY / STATE / CONCURRENCY</span>
-            </div>
           </aside>
         </div>
 
@@ -169,13 +164,6 @@ export function HeroSection() {
 
         <TerminalStrip />
 
-        <footer className="hero-footer">
-          <span>DESIGNED AS A SYSTEM / BUILT WITH INTENT</span>
-          <span>
-            SCROLL TO INSPECT <span className="hero-footer__arrow">↓</span>
-          </span>
-          <span>DATUM. 01 / INDIA</span>
-        </footer>
       </div>
     </section>
   );
