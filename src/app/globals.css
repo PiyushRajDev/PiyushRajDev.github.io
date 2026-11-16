@@ -669,10 +669,13 @@ button {
 }
 
 .project-row__summary {
+  overflow: hidden;
   margin: 12px 0 0 46px;
   color: var(--ink);
   font-size: 18px;
   line-height: 1.55;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .project-row__meta {
@@ -936,7 +939,7 @@ button {
   background: transparent;
   color: var(--ink);
   text-align: left;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .command-palette__item span:last-child {
@@ -977,6 +980,17 @@ button {
 }
 
 /* Responsive layout */
+@media (max-width: 900px) {
+  .projects-section {
+    display: block;
+  }
+
+  .projects-sticky {
+    position: static;
+    margin-bottom: 42px;
+  }
+}
+
 @media (max-width: 1100px) {
   .spec-header {
     gap: 12px 18px;
@@ -1223,7 +1237,10 @@ button {
     margin-left: 36px;
   }
 
-  .project-row__summary,
+  .project-row__summary {
+    white-space: normal;
+  }
+
   .project-row__engineering p {
     font-size: 18px;
   }
