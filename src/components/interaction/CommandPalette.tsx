@@ -241,6 +241,7 @@ export function CommandPalette() {
           setOpen(true);
         }}
         aria-haspopup="dialog"
+        aria-expanded={open}
         aria-keyshortcuts="Control+K Meta+K"
       >
         <span>COMMANDS</span>
