@@ -443,7 +443,7 @@ button {
 .signal-field__controls {
   position: absolute;
   right: 0;
-  bottom: 42px;
+  bottom: 8px;
   z-index: 3;
   display: flex;
   align-items: center;
@@ -505,7 +505,7 @@ button {
 
   .signal-field__controls {
     right: 0;
-    bottom: 40px;
+    bottom: 8px;
     gap: 8px;
   }
 
