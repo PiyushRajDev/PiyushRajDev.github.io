@@ -31,3 +31,7 @@ The default signal is procedural and speech-like: moving formant bands, syllable
 - Canvas redraws use the existing `--paper`, `--ink`, `--accent` and `--secondary` CSS tokens, so the light/dark theme toggle updates the field and its axis.
 - Microphone tracks are stopped and the `AudioContext` is closed when TALK is switched off or the component unmounts.
 - No microphone permission is requested on page load. The mic is never played through the speakers.
+
+## Pigeon-delivered hero portrait
+
+The hero profile image starts in a reserved blank frame. On initial load, a small inline-SVG pigeon carrying a letter flies from the last pointer position observed by the page (using a viewport-center origin if no pointer movement has been recorded) to the portrait. The image is revealed when the bird arrives. Visitors with reduced-motion enabled see the portrait immediately, without the flight. The uploaded monochrome portrait is stored as `public/piyush-avatar.webp`.
