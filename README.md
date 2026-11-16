@@ -35,3 +35,10 @@ The default signal is procedural and speech-like: moving formant bands, syllable
 ## Pigeon-delivered hero portrait
 
 The hero profile image starts in a reserved blank frame. On initial load, a small inline-SVG pigeon carrying a letter flies from the last pointer position observed by the page (using a viewport-center origin if no pointer movement has been recorded) to the portrait. The image is revealed when the bird arrives. Visitors with reduced-motion enabled see the portrait immediately, without the flight. The uploaded monochrome portrait is stored as `public/piyush-avatar.webp`.
+
+
+## Browser icon and social preview
+
+The browser-tab icon is a vector SVG traced from the monochrome profile portrait at `src/app/icon.svg`. The previous default `favicon.ico` was removed so the custom icon is used consistently.
+
+The social share card is generated locally at build time by `src/app/opengraph-image.tsx` using Next.js `ImageResponse`. It includes the local portrait, hero positioning, tagline and spectrogram ridgelines; it requires no external image host or new dependency.
