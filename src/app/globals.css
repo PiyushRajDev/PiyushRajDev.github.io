@@ -420,16 +420,16 @@ button {
   overflow: visible;
   mask-image: radial-gradient(
     ellipse 72% 70% at 50% 50%,
-    #000 30%,
-    rgb(0 0 0 / 0.88) 58%,
-    rgb(0 0 0 / 0.48) 78%,
+    var(--ink) 30%,
+    color-mix(in srgb, var(--ink) 88%, transparent) 58%,
+    color-mix(in srgb, var(--ink) 48%, transparent) 78%,
     transparent 100%
   );
   -webkit-mask-image: radial-gradient(
     ellipse 72% 70% at 50% 50%,
-    #000 30%,
-    rgb(0 0 0 / 0.88) 58%,
-    rgb(0 0 0 / 0.48) 78%,
+    var(--ink) 30%,
+    color-mix(in srgb, var(--ink) 88%, transparent) 58%,
+    color-mix(in srgb, var(--ink) 48%, transparent) 78%,
     transparent 100%
   );
 }
