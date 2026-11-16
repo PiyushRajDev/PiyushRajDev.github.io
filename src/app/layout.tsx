@@ -1,22 +1,41 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { MotionProvider } from "@/components/providers/MotionProvider";
+import { ScrollProgress } from "@/components/shell/ScrollProgress";
+import { identity } from "@/data/identity";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
-import { portfolioData } from "@/data/portfolio";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: `${portfolioData.personal.name} - ${portfolioData.personal.title}`,
-  description: portfolioData.personal.headline,
+  title: "Piyush Raj — Backend Systems Engineer",
+  description:
+    "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
+  metadataBase: new URL("https://portfolio-raj-piyush.vercel.app"),
+  openGraph: {
+    title: "Piyush Raj — Backend Systems Engineer",
+    description:
+      "Engineering systems where latency, state, concurrency and failure are part of the design.",
+    url: "https://portfolio-raj-piyush.vercel.app",
+    siteName: "Piyush Raj",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Piyush Raj — Backend Systems Engineer",
+    description:
+      "Engineering systems where latency, state, concurrency and failure are part of the design.",
+  },
 };
 
 export default function RootLayout({
@@ -25,21 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full selection:bg-zinc-700 selection:text-white group">
-        <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 font-sans md:px-12 md:py-20 lg:px-24 lg:py-0">
-          <div className="lg:flex lg:justify-between lg:gap-4">
-            <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:py-24">
-              <Sidebar />
-            </header>
-            <main id="content" className="pt-12 lg:w-[52%] lg:py-24">
-              {children}
-            </main>
-          </div>
-        </div>
+    <html lang="en" className={`${instrumentSans.variable} ${jetBrainsMono.variable}`}>
+      <body>
+        <MotionProvider>
+          <ScrollProgress />
+          <main id="content">{children}</main>
+        </MotionProvider>
       </body>
     </html>
   );

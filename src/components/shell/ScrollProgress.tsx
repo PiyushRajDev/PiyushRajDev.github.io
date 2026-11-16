@@ -1,0 +1,48 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+export function ScrollProgress() {
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = progressRef.current;
+    if (!element) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const tween = gsap.fromTo(
+      element,
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: document.documentElement,
+          start: "top top",
+          end: "max",
+          scrub: reducedMotion ? false : true,
+        },
+      },
+    );
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, []);
+
+  return (
+    <div className="scroll-rail" aria-hidden="true">
+      <span className="scroll-rail__tick scroll-rail__tick--top" />
+      <div ref={progressRef} className="scroll-rail__progress" />
+      <span className="scroll-rail__tick scroll-rail__tick--bottom" />
+    </div>
+  );
+}
