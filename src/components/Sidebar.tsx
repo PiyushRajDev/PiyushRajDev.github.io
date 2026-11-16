@@ -14,7 +14,6 @@ const navigation = [
 
 export const Sidebar = () => {
   const pathname = usePathname()
-  const isHome = pathname === "/"
 
   return (
     <>

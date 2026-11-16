@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import {
   getCurrentTheme,
   toggleTheme,
   type PortfolioTheme,
 } from "@/lib/theme";
 
+const subscribeToTheme = (onStoreChange: () => void) => {
+  window.addEventListener("portfolio:theme-change", onStoreChange);
+
+  return () => {
+    window.removeEventListener("portfolio:theme-change", onStoreChange);
+  };
+};
+
+const getThemeSnapshot = (): PortfolioTheme => getCurrentTheme();
+
+const getThemeServerSnapshot = (): PortfolioTheme => "light";
+
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<PortfolioTheme>("light");
-
-  useEffect(() => {
-    setTheme(getCurrentTheme());
-
-    const handleThemeChange = (event: Event) => {
-      const customEvent = event as CustomEvent<PortfolioTheme>;
-      setTheme(customEvent.detail);
-    };
-
-    window.addEventListener("portfolio:theme-change", handleThemeChange);
-    return () =>
-      window.removeEventListener("portfolio:theme-change", handleThemeChange);
-  }, []);
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
 
   return (
     <button

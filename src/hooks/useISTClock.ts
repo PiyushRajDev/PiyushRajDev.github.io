@@ -16,8 +16,10 @@ export function useISTClock() {
   const [time, setTime] = useState("--:--:--");
 
   useEffect(() => {
-    setTime(getISTTime());
-    const intervalId = window.setInterval(() => setTime(getISTTime()), 1000);
+    const intervalId = window.setInterval(() => {
+      setTime(getISTTime());
+    }, 1000);
+
     return () => window.clearInterval(intervalId);
   }, []);
 

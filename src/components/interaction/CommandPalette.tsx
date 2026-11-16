@@ -194,9 +194,10 @@ export function CommandPalette() {
     };
   }, [open]);
 
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [query]);
+  const handleQueryChange = (value: string) => {
+  setQuery(value);
+  setActiveIndex(0);
+};
 
   function handleListKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
     if (event.key === "ArrowDown") {
