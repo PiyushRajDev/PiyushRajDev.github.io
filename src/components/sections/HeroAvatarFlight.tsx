@@ -13,37 +13,37 @@ type Point = { x: number; y: number };
 
 const PigeonFlight = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
   function PigeonFlight({ style }, ref) {
-  return (
-    <svg
-      ref={ref}
-      className="pigeon-flight"
-      style={style}
-      viewBox="0 0 90 64"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <g className="pigeon-flight__body">
-        <path d="M11 43c-2-5 0-11 5-15l-7-5 13 2c6-7 16-10 26-7 6-7 14-9 21-5 6 3 8 9 5 15 8 4 11 11 7 17-5 7-17 7-26 3-9 6-22 7-33 2-5-2-8-4-11-7Z" />
-        <path d="M12 39 2 31l14 3M14 43 4 42l12-4" />
-        <circle cx="60" cy="19" r="9" />
-        <path d="M67 18 81 22 68 26Z" className="pigeon-flight__beak" />
-      </g>
-      <path
-        className="pigeon-flight__wing"
-        d="M29 34c1-12 8-20 18-18 9 2 13 9 11 17-6-4-10-3-14 2-5 4-10 4-15-1Z"
-      />
-      <path
-        className="pigeon-flight__feathers"
-        d="m34 29 8-9m-1 12 9-9m-1 12 8-7"
-      />
-      <g className="pigeon-flight__letter">
-        <path d="M69 25h15v11H69z" />
-        <path d="m69 26 7.5 5.5L84 26" />
-        <circle cx="81" cy="34" r="1.5" />
-      </g>
-      <circle className="pigeon-flight__eye" cx="63" cy="17" r="1.25" />
-    </svg>
-  );
+    return (
+      <svg
+        ref={ref}
+        className="pigeon-flight"
+        style={style}
+        viewBox="0 0 90 64"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g className="pigeon-flight__body">
+          <path d="M11 43c-2-5 0-11 5-15l-7-5 13 2c6-7 16-10 26-7 6-7 14-9 21-5 6 3 8 9 5 15 8 4 11 11 7 17-5 7-17 7-26 3-9 6-22 7-33 2-5-2-8-4-11-7Z" />
+          <path d="M12 39 2 31l14 3M14 43 4 42l12-4" />
+          <circle cx="60" cy="19" r="9" />
+          <path d="M67 18 81 22 68 26Z" className="pigeon-flight__beak" />
+        </g>
+        <path
+          className="pigeon-flight__wing"
+          d="M29 34c1-12 8-20 18-18 9 2 13 9 11 17-6-4-10-3-14 2-5 4-10 4-15-1Z"
+        />
+        <path
+          className="pigeon-flight__feathers"
+          d="m34 29 8-9m-1 12 9-9m-1 12 8-7"
+        />
+        <g className="pigeon-flight__letter">
+          <path d="M69 25h15v11H69z" />
+          <path d="m69 26 7.5 5.5L84 26" />
+          <circle cx="81" cy="34" r="1.5" />
+        </g>
+        <circle className="pigeon-flight__eye" cx="63" cy="17" r="1.25" />
+      </svg>
+    );
   },
 );
 
