@@ -1,7 +1,6 @@
 export const identity = {
   name: "PIYUSH RAJ",
-  role: "Backend systems engineer.",
-  statement: "I build real-time, event-driven systems.",
+  role: "Backend systems engineer building real-time systems.",
   detail:
     "Systems where latency, state, concurrency and failure are part of the design.",
   currentProject: "OASIX",

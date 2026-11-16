@@ -2,43 +2,41 @@
 
 import { useMemo, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Line } from "@react-three/drei";
+import { Html, Line } from "@react-three/drei";
 import * as THREE from "three";
 
-const NODE_POSITIONS: [number, number, number][] = [
-  [-2.4, 0.8, 0.1],
-  [-1.45, 1.55, -0.15],
-  [-0.25, 1.0, 0.45],
-  [1.0, 1.55, -0.1],
-  [2.25, 0.65, 0.25],
-  [-1.85, -0.55, 0.45],
-  [-0.45, -0.2, -0.7],
-  [0.85, -0.55, 0.3],
-  [2.0, -1.0, -0.35],
-  [-1.0, -1.45, -0.15],
-  [0.45, -1.55, 0.15],
-  [1.45, 0.4, 1.05],
-];
+const NODES = [
+  { label: "Client", position: [-2.65, 1.15, 0.0] as [number, number, number] },
+  { label: "Edge", position: [-1.65, -0.05, 0.16] as [number, number, number] },
+  { label: "Redis", position: [-0.65, 1.05, -0.12] as [number, number, number] },
+  { label: "BullMQ queue", position: [0.42, -0.08, 0.04] as [number, number, number] },
+  { label: "Worker", position: [1.65, 1.05, 0.12] as [number, number, number] },
+  { label: "Postgres", position: [1.45, -1.12, -0.16] as [number, number, number] },
+  { label: "Elasticsearch", position: [-0.35, -1.28, 0.12] as [number, number, number] },
+] as const;
 
+const REQUEST_ROUTE = [0, 1, 2, 3, 4, 5, 6] as const;
 const CONNECTIONS: [number, number][] = [
-  [0, 1], [1, 2], [2, 3], [3, 4],
-  [0, 5], [5, 6], [6, 2], [2, 7],
-  [7, 8], [8, 10], [10, 9], [9, 5],
-  [3, 11], [11, 7], [6, 10], [4, 8],
-  [1, 6], [5, 2], [7, 4],
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [5, 6],
+  [2, 6],
+  [4, 6],
 ];
 
-const REQUEST_PATH = [0, 5, 6, 2, 3, 11, 7, 8, 4];
+const REQUEST_CYCLE_SECONDS = 14;
 
-function NetworkGraph({
-  progressRef,
-}: {
-  progressRef: MutableRefObject<number>;
-}) {
+function NetworkGraph() {
   const graphRef = useRef<THREE.Group>(null);
   const requestRef = useRef<THREE.Mesh>(null);
   const routeVectors = useMemo(
-    () => REQUEST_PATH.map((index) => new THREE.Vector3(...NODE_POSITIONS[index])),
+    () =>
+      REQUEST_ROUTE.map(
+        (index) => new THREE.Vector3(...NODES[index].position),
+      ),
     [],
   );
   const scratch = useMemo(
@@ -51,21 +49,28 @@ function NetworkGraph({
     const request = requestRef.current;
     if (!graph || !request) return;
 
-    const progress = THREE.MathUtils.clamp(progressRef.current, 0, 0.999);
-    const routePosition = progress * (routeVectors.length - 1);
-    const segment = Math.floor(routePosition);
-    const localProgress = routePosition - segment;
+    const cycle = (state.clock.elapsedTime % REQUEST_CYCLE_SECONDS) /
+      REQUEST_CYCLE_SECONDS;
+    const routePosition = cycle * (routeVectors.length - 1);
+    const segment = Math.min(
+      Math.floor(routePosition),
+      routeVectors.length - 2,
+    );
+    const segmentProgress = routePosition - segment;
+    const easedProgress =
+      segmentProgress * segmentProgress * (3 - 2 * segmentProgress);
 
     scratch.from.copy(routeVectors[segment]);
-    scratch.to.copy(routeVectors[Math.min(segment + 1, routeVectors.length - 1)]);
-    request.position.lerpVectors(scratch.from, scratch.to, localProgress);
+    scratch.to.copy(routeVectors[segment + 1]);
+    request.position.lerpVectors(scratch.from, scratch.to, easedProgress);
 
-    const targetX = state.pointer.y * 0.12 + (progress - 0.5) * 0.13;
-    const targetY = state.pointer.x * 0.18 + (progress - 0.5) * 0.42;
-    graph.rotation.x += (targetX - graph.rotation.x) * Math.min(1, delta * 3);
-    graph.rotation.y += (targetY - graph.rotation.y) * Math.min(1, delta * 3);
+    const targetX = state.pointer.y * 0.075;
+    const targetY = state.pointer.x * 0.12;
+    const easing = Math.min(1, delta * 2.5);
+    graph.rotation.x += (targetX - graph.rotation.x) * easing;
+    graph.rotation.y += (targetY - graph.rotation.y) * easing;
 
-    const pulse = 1 + Math.sin(state.clock.elapsedTime * 3.2) * 0.12;
+    const pulse = 1 + Math.sin(state.clock.elapsedTime * 2.4) * 0.1;
     request.scale.setScalar(pulse);
   });
 
@@ -74,23 +79,34 @@ function NetworkGraph({
       {CONNECTIONS.map(([from, to], index) => (
         <Line
           key={`${from}-${to}-${index}`}
-          points={[NODE_POSITIONS[from], NODE_POSITIONS[to]]}
+          points={[NODES[from].position, NODES[to].position]}
           color="#111111"
-          lineWidth={0.8}
+          lineWidth={0.85}
           transparent
-          opacity={0.52}
+          opacity={0.72}
         />
       ))}
 
-      {NODE_POSITIONS.map((position, index) => (
-        <mesh key={index} position={position}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshBasicMaterial color="#111111" />
-        </mesh>
+      {NODES.map((node) => (
+        <group key={node.label} position={node.position}>
+          <mesh>
+            <sphereGeometry args={[0.045, 8, 8]} />
+            <meshBasicMaterial color="#111111" />
+          </mesh>
+          <Html
+            position={[0, -0.22, 0]}
+            center
+            transform={false}
+            occlude={false}
+            zIndexRange={[2, 0]}
+          >
+            <span className="network-node-label">{node.label}</span>
+          </Html>
+        </group>
       ))}
 
       <mesh ref={requestRef}>
-        <sphereGeometry args={[0.085, 12, 12]} />
+        <sphereGeometry args={[0.09, 12, 12]} />
         <meshBasicMaterial color="#FF4D00" />
       </mesh>
     </group>
@@ -98,16 +114,15 @@ function NetworkGraph({
 }
 
 export default function NetworkScene({
-  progressRef,
   active,
 }: {
-  progressRef: MutableRefObject<number>;
+  progressRef?: MutableRefObject<number>;
   active: boolean;
 }) {
   return (
     <Canvas
-      camera={{ position: [0, 0, 7.3], fov: 38 }}
-      dpr={[1, 1.4]}
+      camera={{ position: [0, 0, 7.0], fov: 42 }}
+      dpr={[1, 1.35]}
       frameloop={active ? "always" : "never"}
       gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
       onCreated={({ gl }) => {
@@ -115,7 +130,7 @@ export default function NetworkScene({
         gl.outputColorSpace = THREE.SRGBColorSpace;
       }}
     >
-      <NetworkGraph progressRef={progressRef} />
+      <NetworkGraph />
     </Canvas>
   );
 }

@@ -2,36 +2,39 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { NetworkFallback } from "./NetworkFallback";
 
 const NetworkScene = dynamic(() => import("./NetworkScene"), {
   ssr: false,
-  loading: () => <NetworkFallback />,
+  loading: () => <NetworkFallback animated={false} />,
 });
 
 export function NetworkSceneLoader() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(0);
   const [fallback, setFallback] = useState(true);
+  const [animateFallback, setAnimateFallback] = useState(false);
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
 
     const updateMode = () => {
-      setFallback(media.matches || window.innerWidth < 768);
+      const reducedMotion = motionPreference.matches;
+      const useFallback = reducedMotion || window.innerWidth < 768;
+      setFallback(useFallback);
+      setAnimateFallback(!reducedMotion);
     };
 
     updateMode();
-    media.addEventListener("change", updateMode);
+    motionPreference.addEventListener("change", updateMode);
     window.addEventListener("resize", updateMode);
 
     const element = containerRef.current;
     if (!element) {
       return () => {
-        media.removeEventListener("change", updateMode);
+        motionPreference.removeEventListener("change", updateMode);
         window.removeEventListener("resize", updateMode);
       };
     }
@@ -42,21 +45,10 @@ export function NetworkSceneLoader() {
     );
     observer.observe(element);
 
-    gsap.registerPlugin(ScrollTrigger);
-    const trigger = ScrollTrigger.create({
-      trigger: "#hero",
-      start: "top top",
-      end: "bottom top",
-      onUpdate: (self) => {
-        progressRef.current = self.progress;
-      },
-    });
-
     return () => {
-      media.removeEventListener("change", updateMode);
+      motionPreference.removeEventListener("change", updateMode);
       window.removeEventListener("resize", updateMode);
       observer.disconnect();
-      trigger.kill();
     };
   }, []);
 
@@ -64,17 +56,14 @@ export function NetworkSceneLoader() {
     <div
       ref={containerRef}
       className="network-scene"
-      aria-label="Distributed system network visualization"
+      role="img"
+      aria-label="Client to Edge to Redis to BullMQ queue to Worker to Postgres to Elasticsearch"
     >
       {fallback ? (
-        <NetworkFallback />
+        <NetworkFallback animated={animateFallback} />
       ) : (
-        <NetworkScene progressRef={progressRef} active={active} />
+        <NetworkScene active={active} />
       )}
-      <div className="network-scene__caption">
-        <span>NODE GRAPH / 3D-01</span>
-        <span>REQUEST ROUTE ACTIVE</span>
-      </div>
     </div>
   );
 }
