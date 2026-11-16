@@ -1,11 +1,13 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { identity } from "@/data/identity";
 import { projects } from "@/data/projects";
 
 type SectionIntroProps = {
   index: string;
   label: string;
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function SectionIntro({ index, label, children }: SectionIntroProps) {
@@ -23,7 +25,7 @@ function SectionIntro({ index, label, children }: SectionIntroProps) {
 export function AboutSection() {
   return (
     <section className="content-section" id="about" aria-labelledby="about-title">
-      <SectionIntro index="01" label="PROFILE / OPERATING CONTEXT">
+      <SectionIntro index="01" label="ABOUT / PROFILE">
         <h2 id="about-title">
           I build the systems that make products work <em>in real time.</em>
         </h2>
@@ -69,208 +71,162 @@ export function AboutSection() {
 }
 
 export function ProjectsSection() {
+  const [activeProject, setActiveProject] = useState("01");
+
+  useEffect(() => {
+    const rows = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-project-number]"),
+    );
+    if (!rows.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const activeEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const activeNumber = activeEntries[0]?.target.getAttribute(
+          "data-project-number",
+        );
+        if (activeNumber) setActiveProject(activeNumber);
+      },
+      {
+        rootMargin: "-38% 0px -48% 0px",
+        threshold: [0, 0.15, 0.35, 0.6, 1],
+      },
+    );
+
+    rows.forEach((row) => observer.observe(row));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="content-section" id="projects" aria-labelledby="projects-title">
-      <SectionIntro index="02" label="SELECTED BUILDS / PROJECT INDEX">
+    <section
+      className="content-section projects-section"
+      id="projects"
+      aria-labelledby="projects-title"
+    >
+      <div className="projects-sticky">
+        <div className="section-intro__index">
+          <span>02</span>
+          <span>PROJECTS / SELECTED BUILDS</span>
+        </div>
         <h2 id="projects-title">
           Products and systems, built by working through the <em>hard parts.</em>
         </h2>
-      </SectionIntro>
+        <div className="projects-counter" aria-live="polite">
+          <span>{activeProject}</span>
+          <span>/ {String(projects.length).padStart(2, "0")}</span>
+        </div>
+      </div>
 
-      <div className="projects-grid">
+      <div className="project-list">
         {projects.map((project) => (
-          <article className="project-card" key={project.number}>
-            <div className="project-card__meta">
-              <span>{project.number} / 05</span>
-              <span>{project.category}</span>
+          <article
+            className="project-row"
+            id={`project-${project.number}`}
+            data-project-number={project.number}
+            key={project.number}
+            tabIndex={0}
+            aria-label={`${project.name}, ${project.category}`}
+          >
+            <div className="project-row__heading">
+              <span className="project-row__number">{project.number}</span>
+              <h3>{project.name}</h3>
+              <span className="project-row__status">{project.status}</span>
             </div>
 
-            <h3>{project.name}</h3>
-            <p className="project-card__summary">{project.summary}</p>
+            <p className="project-row__summary">{project.summary}</p>
 
-            <div className="project-card__engineering">
-              <span>ENGINEERING FOCUS</span>
-              <p>{project.engineering}</p>
+            <div className="project-row__meta">
+              <span className="project-row__category">{project.category}</span>
+              <span className="project-row__stack">
+                {project.stack.join(" · ")}
+              </span>
             </div>
 
-            <div className="project-card__footer">
-              <div className="project-card__stack" aria-label="Technology stack">
-                {project.stack.map((technology) => (
-                  <span key={technology}>{technology}</span>
-                ))}
-              </div>
-              <div className="project-card__links">
-                <a href={project.repository} target="_blank" rel="noreferrer">
-                  SOURCE <span aria-hidden="true">↗</span>
-                </a>
-                {project.live ? (
-                  <a href={project.live} target="_blank" rel="noreferrer">
-                    LIVE <span aria-hidden="true">↗</span>
+            <div className="project-row__detail">
+              <div className="project-row__detail-inner">
+                <div className="project-row__engineering">
+                  <span>ENGINEERING FOCUS</span>
+                  <p>{project.engineering}</p>
+                </div>
+                <div className="project-row__links">
+                  <a href={project.repository} target="_blank" rel="noreferrer">
+                    SOURCE CODE <span aria-hidden="true">↗</span>
                   </a>
-                ) : null}
+                  {project.live ? (
+                    <a href={project.live} target="_blank" rel="noreferrer">
+                      LIVE PROJECT <span aria-hidden="true">↗</span>
+                    </a>
+                  ) : null}
+                </div>
               </div>
             </div>
           </article>
         ))}
       </div>
-    </section>
-  );
-}
-
-const systemFocus = [
-  {
-    number: "01",
-    label: "TRANSPORT",
-    title: "Move information deliberately.",
-    description:
-      "Streaming boundaries, message ordering, reconnects and latency are part of the product contract.",
-    topics: "WEBSOCKET / WEBRTC / AUDIO STREAMS",
-  },
-  {
-    number: "02",
-    label: "STATE",
-    title: "Make ownership explicit.",
-    description:
-      "Sessions, rooms and jobs need clear lifetimes, consistency rules and cleanup paths.",
-    topics: "LIFECYCLE / CONSISTENCY / IDEMPOTENCY",
-  },
-  {
-    number: "03",
-    label: "EXECUTION",
-    title: "Keep work bounded.",
-    description:
-      "Queues, workers and concurrency limits keep bursts from turning into cascading failures.",
-    topics: "QUEUES / WORKERS / BACKPRESSURE",
-  },
-  {
-    number: "04",
-    label: "RECOVERY",
-    title: "Design for the partial failure.",
-    description:
-      "Timeouts, cancellation, retries and observability should exist before a dependency goes down.",
-    topics: "TIMEOUTS / RETRIES / TELEMETRY",
-  },
-] as const;
-
-export function SystemsSection() {
-  return (
-    <section className="content-section" id="systems" aria-labelledby="systems-title">
-      <SectionIntro index="03" label="ENGINEERING / SYSTEMS THINKING">
-        <h2 id="systems-title">
-          A system is the decisions <em>around the code.</em>
-        </h2>
-      </SectionIntro>
-
-      <div className="systems-grid">
-        {systemFocus.map((item) => (
-          <article className="systems-item" key={item.number}>
-            <div className="systems-item__index">
-              <span>{item.number}</span>
-              <span>{item.label}</span>
-            </div>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-            <span className="systems-item__topics">{item.topics}</span>
-          </article>
-        ))}
-      </div>
-
-      <div className="systems-flow" aria-label="A typical system path">
-        <span>REQUEST</span>
-        <b aria-hidden="true">→</b>
-        <span>TRANSPORT</span>
-        <b aria-hidden="true">→</b>
-        <span>QUEUE</span>
-        <b aria-hidden="true">→</b>
-        <span>WORKER</span>
-        <b aria-hidden="true">→</b>
-        <span>STORAGE</span>
-        <b aria-hidden="true">→</b>
-        <span>TELEMETRY</span>
-      </div>
-    </section>
-  );
-}
-
-const principles = [
-  {
-    number: "01",
-    title: "Latency is a product decision.",
-    description:
-      "In a conversation, a delay changes whether an experience feels natural, interruptible or broken. The budget belongs to the whole pipeline.",
-  },
-  {
-    number: "02",
-    title: "State needs an owner.",
-    description:
-      "Rooms, sessions and jobs all have lifetimes. Hidden shared state and missing cleanup are reliability problems, not implementation details.",
-  },
-  {
-    number: "03",
-    title: "Failure is a normal path.",
-    description:
-      "Dependencies stall, streams disconnect and workers retry. A resilient system makes those paths visible and gives them deliberate behaviour.",
-  },
-] as const;
-
-export function ThinkingSection() {
-  return (
-    <section className="content-section" id="thinking" aria-labelledby="thinking-title">
-      <SectionIntro index="04" label="FIELD NOTES / PRINCIPLES">
-        <h2 id="thinking-title">
-          Questions I keep asking <em>while I build.</em>
-        </h2>
-      </SectionIntro>
-
-      <div className="thinking-grid">
-        {principles.map((item) => (
-          <article className="thinking-item" key={item.number}>
-            <span className="thinking-item__number">{item.number} / NOTE</span>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </article>
-        ))}
-      </div>
-
-      <a
-        className="section-outbound"
-        href={identity.x}
-        target="_blank"
-        rel="noreferrer"
-      >
-        FOLLOW THE BUILD NOTES ON X <span aria-hidden="true">↗</span>
-      </a>
     </section>
   );
 }
 
 export function ContactSection() {
-  return (
-    <section className="content-section content-section--contact" id="contact" aria-labelledby="contact-title">
-      <SectionIntro index="05" label="CONTACT / NEXT CONNECTION">
-        <h2 id="contact-title">
-          Have a problem worth <em>building around?</em>
-        </h2>
-      </SectionIntro>
+  const [copied, setCopied] = useState(false);
 
-      <div className="contact-layout">
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(identity.email);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  return (
+    <section
+      className="content-section contact-section"
+      id="contact"
+      aria-labelledby="contact-title"
+    >
+      <div className="section-intro__index">
+        <span>03</span>
+        <span>CONTACT</span>
+      </div>
+
+      <div className="contact-content">
+        <h2 id="contact-title">
+          Have a problem worth building around?
+        </h2>
         <p>
           I’m open to backend, real-time systems and voice AI opportunities,
           especially where there’s meaningful engineering to do.
         </p>
-        <a className="contact-email" href={`mailto:${identity.email}`}>
-          {identity.email} <span aria-hidden="true">↗</span>
-        </a>
+
+        <div className="contact-email-row">
+          <a className="contact-email" href={`mailto:${identity.email}`}>
+            {identity.email}
+          </a>
+          <button
+            type="button"
+            className="copy-email"
+            onClick={copyEmail}
+            aria-label={copied ? "Email address copied" : "Copy email address"}
+          >
+            {copied ? "COPIED" : "COPY"}
+          </button>
+        </div>
       </div>
 
+      <nav className="contact-links" aria-label="Contact links">
+        <a href={identity.github} target="_blank" rel="noreferrer">GITHUB ↗</a>
+        <a href={identity.x} target="_blank" rel="noreferrer">X ↗</a>
+        <a href={identity.resume} target="_blank" rel="noreferrer">RESUME PDF ↗</a>
+      </nav>
+
       <footer className="portfolio-footer">
-        <span>PIYUSH RAJ / INDIA · IST</span>
-        <div>
-          <a href={identity.github} target="_blank" rel="noreferrer">GITHUB ↗</a>
-          <a href={identity.x} target="_blank" rel="noreferrer">X ↗</a>
-          <a href={`mailto:${identity.email}`}>EMAIL ↗</a>
-        </div>
-        <span>BUILT WITH INTENT / © 2026</span>
+        <span>PIYUSH RAJ</span>
+        <span>INDIA · IST</span>
+        <span>© 2026</span>
       </footer>
     </section>
   );
