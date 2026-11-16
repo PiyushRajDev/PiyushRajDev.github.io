@@ -10,7 +10,11 @@ export function applyTheme(theme: PortfolioTheme) {
   root.classList.remove("theme-light", "theme-dark");
   root.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
   root.dataset.theme = theme;
-  window.localStorage.setItem("portfolio-theme", theme);
+  try {
+    window.localStorage.setItem("portfolio-theme", theme);
+  } catch {
+    // Theme changes still apply for the current session when storage is blocked.
+  }
   window.dispatchEvent(
     new CustomEvent<PortfolioTheme>("portfolio:theme-change", {
       detail: theme,
