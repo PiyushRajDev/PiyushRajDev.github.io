@@ -41,7 +41,7 @@ export function SignalFieldFallback() {
           key={point.key}
           cx={point.x}
           cy={point.y}
-          r={point.accent ? 1.45 : 1.1}
+          r={point.accent ? 2.8 : 2.2}
           opacity={point.opacity}
           className={point.accent ? "signal-field__accent" : "signal-field__point"}
         />
