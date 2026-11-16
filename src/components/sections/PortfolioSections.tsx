@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { identity } from "@/data/identity";
 import { projects } from "@/data/projects";
 
@@ -171,12 +171,28 @@ export function ProjectsSection() {
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
+  const copyTimer = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+    },
+    [],
+  );
 
   async function copyEmail() {
     try {
       await navigator.clipboard.writeText(identity.email);
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
+      copyTimer.current = window.setTimeout(() => {
+        setCopied(false);
+        copyTimer.current = null;
+      }, 1500);
     } catch {
       setCopied(false);
     }
