@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, type SVGProps, useEffect, useRef, useState } from "react";
 
 const FLIGHT_DURATION_MS = 1680;
 const LAUNCH_DELAY_MS = 320;
@@ -11,11 +11,13 @@ const BIRD_HEIGHT = 58;
 
 type Point = { x: number; y: number };
 
-const PigeonFlight = forwardRef<SVGSVGElement>(function PigeonFlight(_, ref) {
+const PigeonFlight = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+  function PigeonFlight({ style }, ref) {
   return (
     <svg
       ref={ref}
       className="pigeon-flight"
+      style={style}
       viewBox="0 0 90 64"
       aria-hidden="true"
       focusable="false"
@@ -42,7 +44,8 @@ const PigeonFlight = forwardRef<SVGSVGElement>(function PigeonFlight(_, ref) {
       <circle className="pigeon-flight__eye" cx="63" cy="17" r="1.25" />
     </svg>
   );
-});
+  },
+);
 
 export function HeroAvatarFlight() {
   const avatarRef = useRef<HTMLDivElement>(null);
