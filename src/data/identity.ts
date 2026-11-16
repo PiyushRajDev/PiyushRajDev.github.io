@@ -9,5 +9,5 @@ export const identity = {
   email: "piyush.705039@gmail.com",
   github: "https://github.com/PiyushRajDev",
   x: "https://x.com/imposterdev07",
-  resume: "/resume.pdf",
+  resume: "https://drive.google.com/file/d/1Rf7VFc2HBUseOqRkrG3lGbRNVDzLpSEZ/view?usp=sharing",
 } as const;
