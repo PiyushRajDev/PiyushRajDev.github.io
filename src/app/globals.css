@@ -1428,3 +1428,13 @@ button {
     overflow-wrap: anywhere;
   }
 }
+
+
+@media (max-width: 767px) {
+  .spec-nav__links {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    column-gap: 16px;
+    row-gap: 4px;
+  }
+}
