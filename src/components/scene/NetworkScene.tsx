@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type MutableRefObject } from "react";
+import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Html, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -113,12 +113,7 @@ function NetworkGraph() {
   );
 }
 
-export default function NetworkScene({
-  active,
-}: {
-  progressRef?: MutableRefObject<number>;
-  active: boolean;
-}) {
+export default function NetworkScene({ active }: { active: boolean }) {
   return (
     <Canvas
       camera={{ position: [0, 0, 7.0], fov: 42 }}

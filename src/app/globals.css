@@ -301,7 +301,7 @@ button {
   flex-direction: column;
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(64px, 9vw, 134px);
+  font-size: clamp(64px, 8.7vw, 134px);
   font-weight: 650;
   letter-spacing: -0.035em;
   line-height: 0.84;
@@ -569,7 +569,7 @@ button {
 }
 
 .terminal__form input::placeholder {
-  color: #9a968d;
+  color: var(--secondary);
 }
 
 .terminal__form button {
@@ -583,20 +583,6 @@ button {
 
 .terminal__form button:hover {
   border-color: var(--orange);
-  color: var(--orange);
-}
-
-.hero-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 17px;
-  color: var(--secondary);
-  font: 500 8px/1.4 var(--mono);
-  letter-spacing: 0.08em;
-}
-
-.hero-footer__arrow {
   color: var(--orange);
 }
 
@@ -660,23 +646,39 @@ button {
 
   .spec-header {
     grid-template-columns: auto minmax(0, 1fr) auto;
-    min-height: 57px;
-    gap: 10px;
+    grid-template-rows: auto auto;
+    min-height: 64px;
+    gap: 7px 10px;
+    padding-block: 7px;
     font-size: 8px;
   }
 
-  .spec-header__meta {
-    font-size: 8px;
-    letter-spacing: 0.01em;
+  .spec-mark {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .spec-header__status {
+    grid-column: 3;
+    grid-row: 1;
     justify-self: end;
     font-size: 7px;
   }
 
+  .spec-header__meta {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    font-size: 8px;
+    letter-spacing: 0.01em;
+  }
+
   .spec-clock {
-    display: none;
+    display: flex;
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    gap: 4px;
+    font-size: 8px;
   }
 
   .spec-nav {
@@ -784,14 +786,6 @@ button {
     font-size: 11px;
   }
 
-  .hero-footer {
-    flex-wrap: wrap;
-    font-size: 7px;
-  }
-
-  .hero-footer span:last-child {
-    display: none;
-  }
 }
 
 @media (max-width: 380px) {

@@ -164,13 +164,6 @@ export function HeroSection() {
 
         <TerminalStrip />
 
-        <footer className="hero-footer">
-          <span>DESIGNED AS A SYSTEM / BUILT WITH INTENT</span>
-          <span>
-            SCROLL TO INSPECT <span className="hero-footer__arrow">↓</span>
-          </span>
-          <span>DATUM. 01 / INDIA</span>
-        </footer>
       </div>
     </section>
   );
