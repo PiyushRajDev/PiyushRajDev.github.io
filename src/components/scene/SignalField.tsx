@@ -26,8 +26,8 @@ function readToken(name: string, fallback: string) {
 function SignalParticles({ active }: { active: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const cursor = useRef(new THREE.Vector2(100, 100));
-  const lastPointer = useRef(new THREE.Vector2(100, 100));
+  const cursor = useRef(new THREE.Vector2(0, 0));
+  const lastPointer = useRef(new THREE.Vector2(0, 0));
   const rippleStartedAt = useRef(-100);
   const points = useMemo<BasePoint[]>(() => {
     return Array.from({ length: COUNT }, (_, index) => {
@@ -36,7 +36,9 @@ function SignalParticles({ active }: { active: boolean }) {
       return {
         x: (column / (COLUMNS - 1) - 0.5) * FIELD_WIDTH,
         y: (row / (ROWS - 1) - 0.5) * FIELD_HEIGHT,
-        accent: index % 60 === 0,
+        accent:
+          Math.sin(((column / (COLUMNS - 1) - 0.5) * FIELD_WIDTH) * 1.45) >
+            0.82 && index % 12 === 0,
       };
     });
   }, []);
