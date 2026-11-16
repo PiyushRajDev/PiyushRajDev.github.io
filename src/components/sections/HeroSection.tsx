@@ -11,7 +11,8 @@ const navigation = [
   { label: "ABOUT", href: "#about", index: "01" },
   { label: "PROJECTS", href: "#projects", index: "02" },
   { label: "SYSTEMS", href: "#systems", index: "03" },
-  { label: "CONTACT", href: "#contact", index: "04" },
+  { label: "THINKING", href: "#thinking", index: "04" },
+  { label: "CONTACT", href: "#contact", index: "05" },
 ];
 
 export function HeroSection() {
@@ -84,7 +85,7 @@ export function HeroSection() {
         </header>
 
         <nav className="spec-nav" aria-label="Primary navigation">
-          <span className="spec-nav__label">INDEX / 00—04</span>
+          <span className="spec-nav__label">INDEX / 00—05</span>
           <div className="spec-nav__links">
             {navigation.map((item) => (
               <a key={item.index} href={item.href}>
