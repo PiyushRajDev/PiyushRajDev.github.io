@@ -24,7 +24,7 @@ export function SignalFieldFallback() {
       key: index,
       x,
       y,
-      accent: index % 60 === 0,
+      accent: Math.sin(normalizedX * 1.45) > 0.82 && index % 12 === 0,
       opacity: 0.45 + (1 - Math.abs(normalizedY) / 2) * 0.5,
     };
   });
