@@ -297,7 +297,7 @@ button {
   display: flex;
   width: fit-content;
   max-width: 100%;
-  align-items: center;
+  align-items: flex-start;
   gap: clamp(12px, 1.7vw, 22px);
 }
 
@@ -306,6 +306,7 @@ button {
   width: clamp(68px, 7.8vw, 108px);
   aspect-ratio: 1;
   flex: 0 0 auto;
+  margin-top: clamp(4px, 0.55vw, 9px);
   overflow: hidden;
   border: 1px solid var(--hairline);
   border-radius: 14px;
@@ -354,7 +355,7 @@ button {
   fill: var(--secondary);
   transform-box: fill-box;
   transform-origin: 42% 82%;
-  animation: pigeon-wing-flap 170ms ease-in-out infinite alternate;
+  animation: pigeon-wing-flap 230ms ease-in-out infinite alternate;
 }
 
 .pigeon-flight__feathers {
@@ -388,10 +389,10 @@ button {
 
 @keyframes pigeon-wing-flap {
   from {
-    transform: rotate(-22deg) scaleY(0.82);
+    transform: rotate(-32deg) scaleY(0.72);
   }
   to {
-    transform: rotate(22deg) scaleY(1.08);
+    transform: rotate(32deg) scaleY(1.12);
   }
 }
 
