@@ -156,6 +156,12 @@ export function CommandPalette() {
     };
 
     const handleShortcut = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape" && open) {
+        event.preventDefault();
+        close();
+        return;
+      }
+
       const isShortcut =
         (event.metaKey || event.ctrlKey) &&
         event.key.toLowerCase() === "k";
@@ -202,6 +208,23 @@ export function CommandPalette() {
     } else if (event.key === "Enter" && filteredItems[activeIndex]) {
       event.preventDefault();
       void execute(filteredItems[activeIndex]);
+    } else if (event.key === "Tab") {
+      const dialog = event.currentTarget;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), input:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   }
 
