@@ -2,43 +2,28 @@
 
 https://piyushrajdev.github.io/
 
-## Live audio spectrogram ridgelines
+## Interactive system map
 
-The hero visual is a 2D canvas ridgeline plot. Every row is one FFT time-slice across a logarithmic frequency axis (80 Hz–8 kHz). The newest frame is inserted at the front; older frames shift deeper into the plot. Rows are drawn back-to-front, filled with the page background token to mask farther traces, then stroked in the foreground token. Only line segments above the peak threshold use the accent token.
+The hero's right column contains an interactive, 3D-style conceptual dependency map rendered with a lightweight 2D canvas projection. It presents 11 nodes across transport, project, state/storage, observability and environment categories, connected by 13 conceptual edges.
 
-The default signal is procedural and speech-like: moving formant bands, syllable envelopes, harmonic/fricative energy and deliberate pauses. The microphone path uses the same `SignalSource → RollingFFTBuffer → Canvas renderer` pipeline. Microphone access is opt-in through the `TALK` button, uses a 2048-point `AnalyserNode` with 0.78 smoothing, and never connects microphone audio to the output destination.
+The project nodes are based on the portfolio's current work: Vāk, OASIX, SkillLighthouse and MetaSpace. Infrastructure nodes represent the real-time transport, storage and observability concepts used across those projects and engineering experiments. The local runtime boundary is deliberately isolated to show that it sits outside the conceptual service mesh.
 
-### Tunable constants
+### Interaction and rendering
 
-| Constant | Current value | Purpose |
-| --- | ---: | --- |
-| `SPECTRUM_BINS` | 88 | Log-spaced frequency columns |
-| `TERRAIN_ROWS` | 44 | Time slices retained in the scrolling depth buffer |
-| `MIN_FREQUENCY` | 80 Hz | Lower voice-analysis bound |
-| `MAX_FREQUENCY` | 8 kHz | Upper voice-analysis bound |
-| `PEAK_THRESHOLD` | 0.72 | Switches above-threshold line segments to the accent token |
-| `FRAME_INTERVAL_MS` | 33.3 ms | Canvas sampling cadence (about 30 frames/second) |
-| `fftSize` | 2048 | Web Audio FFT window |
-| `smoothingTimeConstant` | 0.78 | Temporal smoothing for live mic data |
-| `MAX_PIXEL_RATIO` | 1.75 | Canvas backing-store pixel-ratio cap |
-
-### Rendering and lifecycle
-
-- Canvas uses a 2D context; no Three.js, WebGL, external models or new runtime dependencies are required.
-- The rolling FFT array is updated in place. The canvas is redrawn at about 30 fps while visible.
-- Rendering pauses when the hero leaves the viewport or the document tab is hidden.
-- A `prefers-reduced-motion` setting, small viewport, or low-power device renders one static frame.
-- Canvas redraws use the existing `--paper`, `--ink`, `--accent` and `--secondary` CSS tokens, so the light/dark theme toggle updates the field and its axis.
-- Microphone tracks are stopped and the `AudioContext` is closed when TALK is switched off or the component unmounts.
-- No microphone permission is requested on page load. The mic is never played through the speakers.
+- Drag the canvas to rotate the scene; select a node to inspect its purpose.
+- The node selector is keyboard accessible and provides the same inspection interaction without pointer input.
+- "Pause flow" stops the small animated packets; "Reset" restores the initial camera.
+- The moving packets are explicitly labelled simulated flow. The map is conceptual, not connected to live telemetry, and it does not invent latency or traffic measurements.
+- The map is drawn with the Canvas 2D API and a small perspective projection. It has no Three.js/WebGL dependency.
+- Rendering pauses when the map leaves the viewport or the browser tab is hidden. Device pixel ratio is capped at 1.6.
+- `prefers-reduced-motion` renders a still frame. The map remains selectable and rotatable.
+- Colors come from the existing page theme tokens plus subdued category colors, and update when the light/dark theme changes.
+- The canvas is hidden from assistive technology; native buttons and a select expose pause, reset and node inspection to keyboard users.
 
 ## Pigeon-delivered hero portrait
 
 The hero profile image starts in a reserved blank frame. On initial load, a small inline-SVG pigeon carrying a letter flies from the last pointer position observed by the page (using a viewport-center origin if no pointer movement has been recorded) to the portrait. The image is revealed when the bird arrives. Visitors with reduced-motion enabled see the portrait immediately, without the flight. The uploaded monochrome portrait is stored as `public/piyush-avatar.webp`.
 
-
 ## Browser icon and social preview
 
-The browser-tab icon is a vector SVG traced from the monochrome profile portrait at `src/app/icon.svg`. The previous default `favicon.ico` was removed so the custom icon is used consistently.
-
-The social share card is generated locally at build time by `src/app/opengraph-image.tsx` using Next.js `ImageResponse`. It includes the local portrait, hero positioning, tagline and spectrogram ridgelines; it requires no external image host or new dependency.
+The browser-tab icon is a vector SVG traced from the monochrome profile portrait at `src/app/icon.svg`. The social share card is generated locally at build time by `src/app/opengraph-image.tsx` using Next.js `ImageResponse`. It includes the local portrait, hero positioning, tagline and a system-map motif; it requires no external image host or new dependency.

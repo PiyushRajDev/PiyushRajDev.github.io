@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { identity } from "@/data/identity";
 import { useISTClock } from "@/hooks/useISTClock";
-import { SignalFieldLoader } from "@/components/scene/SignalFieldLoader";
+import { SystemMap } from "@/components/scene/SystemMap";
 import { HeroAvatarFlight } from "@/components/sections/HeroAvatarFlight";
 import { CommandPalette } from "@/components/interaction/CommandPalette";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
@@ -133,7 +133,7 @@ export function HeroSection() {
           </div>
 
           <div className="hero-visual">
-            <SignalFieldLoader />
+            <SystemMap />
           </div>
         </div>
 
