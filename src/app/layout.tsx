@@ -40,23 +40,34 @@ export const metadata: Metadata = {
   description:
     "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
   metadataBase: new URL("https://piyushrajdev.github.io"),
+  alternates: {
+    canonical: "https://piyushrajdev.github.io/",
+  },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: "/icon.svg",
   },
   openGraph: {
+    type: "website",
+    url: "https://piyushrajdev.github.io/",
     title: "Piyush Raj — Backend Systems Engineer",
     description:
-      "Engineering systems where latency, state, concurrency and failure are part of the design.",
-    url: "https://piyushrajdev.github.io",
+      "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
     siteName: "Piyush Raj",
-    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Piyush Raj — Backend Systems Engineer portfolio preview",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Piyush Raj — Backend Systems Engineer",
     description:
-      "Engineering systems where latency, state, concurrency and failure are part of the design.",
+      "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
     images: ["/opengraph-image"],
   },
 };
