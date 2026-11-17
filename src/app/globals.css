@@ -2706,3 +2706,193 @@ button {
   --map-observability: var(--accent);
   --map-environment: color-mix(in srgb, var(--secondary) 55%, var(--paper));
 }
+
+
+/* Final system map panel layout and light-mode finish */
+.system-map {
+  display: grid;
+  grid-template-rows: auto auto minmax(220px, 1fr) auto auto auto;
+  gap: 8px;
+  overflow: visible;
+}
+
+.system-map__viewport {
+  min-height: 0;
+  border-color: color-mix(in srgb, var(--ink) 24%, var(--paper));
+  background: var(--paper);
+}
+
+.system-map__inspector {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.34fr);
+  align-items: center;
+  min-width: 0;
+  min-height: 82px;
+  gap: 20px;
+  padding: 10px 0 12px;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.system-map__inspector-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.system-map__inspector-copy strong {
+  display: block;
+  overflow: visible;
+}
+
+.system-map__inspector-copy p {
+  display: -webkit-box;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.system-map__legend {
+  display: flex;
+  min-height: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px 16px;
+  padding-block: 2px;
+}
+
+.system-map__footnote {
+  margin: 0;
+  padding-top: 2px;
+  line-height: 1.45;
+}
+
+:root.theme-light .system-map {
+  --map-transport: #756A5C;
+  --map-project: #24211D;
+  --map-state: #968B7E;
+  --map-observability: #E94F24;
+  --map-environment: #81776C;
+}
+
+:root.theme-light .system-map__viewport {
+  border-color: #C9C1B5;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(53, 45, 35, 0.025),
+      rgba(53, 45, 35, 0.008)
+    ),
+    var(--paper);
+}
+
+:root.theme-light .system-map__eyebrow {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:root.theme-light .system-map__actions button {
+  border-color: #BDB4A8;
+  color: var(--ink);
+}
+
+:root.theme-light .system-map__actions button:hover {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:root.theme-light .system-map__select-label select {
+  border-color: #BDB4A8;
+  background: #F5F1E9;
+  color: #24211D;
+}
+
+:root.theme-light .system-map__canvas-status {
+  border: 1px solid #D3CBBF;
+  background: rgba(245, 241, 233, 0.96);
+  color: #625A50;
+}
+
+:root.theme-light .system-map__legend > span,
+:root.theme-light .system-map__footnote,
+:root.theme-light .system-map__counts,
+:root.theme-light .system-map__caption {
+  color: #6D655B;
+}
+
+@media (min-width: 1101px) {
+  .hero-visual {
+    height: clamp(500px, 58vh, 600px);
+  }
+
+  .system-map {
+    grid-template-rows: auto auto minmax(275px, 1fr) auto auto auto;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .system-map {
+    grid-template-rows: auto auto minmax(230px, 1fr) auto auto auto;
+  }
+
+  .system-map__inspector {
+    grid-template-columns: minmax(0, 1fr) 135px;
+    min-height: 78px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-visual {
+    height: clamp(440px, 115vw, 540px);
+  }
+
+  .system-map {
+    grid-template-rows: auto auto minmax(245px, 1fr) auto auto auto;
+    gap: 8px;
+  }
+
+  .system-map__inspector {
+    grid-template-columns: minmax(0, 1fr) 108px;
+    min-height: 76px;
+    gap: 9px;
+    padding-block: 8px;
+  }
+
+  .system-map__inspector-copy p {
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 420px) {
+  .system-map__inspector {
+    grid-template-columns: minmax(0, 1fr) 98px;
+  }
+
+  .system-map__legend {
+    gap: 6px 9px;
+  }
+
+  .system-map__footnote {
+    font-size: 8px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 768px) {
+  .hero-visual {
+    height: 500px;
+  }
+
+  .system-map {
+    grid-template-rows: auto auto minmax(210px, 1fr) auto auto;
+  }
+
+  .system-map__footnote {
+    display: none;
+  }
+}
+
