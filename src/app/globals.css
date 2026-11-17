@@ -2328,3 +2328,54 @@ button {
     font-size: 8px;
   }
 }
+
+
+@media (max-height: 760px) and (min-width: 768px) {
+  .system-map {
+    gap: 3px;
+  }
+
+  .system-map__header {
+    min-height: 23px;
+  }
+
+  .system-map__caption {
+    min-height: 12px;
+  }
+
+  .system-map__viewport {
+    min-height: 145px;
+  }
+
+  .system-map__inspector {
+    min-height: 46px;
+    padding-block: 3px;
+  }
+
+  .system-map__legend {
+    min-height: 10px;
+  }
+
+  .system-map__footnote {
+    display: none;
+  }
+}
+
+@media (max-height: 760px) and (max-width: 767px) {
+  .hero-visual {
+    height: clamp(285px, 48vh, 330px);
+  }
+
+  .system-map__viewport {
+    min-height: 145px;
+  }
+
+  .system-map__inspector {
+    min-height: 46px;
+    padding-block: 3px;
+  }
+
+  .system-map__footnote {
+    display: none;
+  }
+}
