@@ -56,9 +56,10 @@ export const metadata: Metadata = {
     siteName: "Piyush Raj",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/og.png",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Piyush Raj — Backend Systems Engineer portfolio preview",
       },
     ],
@@ -68,7 +69,7 @@ export const metadata: Metadata = {
     title: "Piyush Raj — Backend Systems Engineer",
     description:
       "Piyush Raj builds real-time, event-driven and distributed systems. Projects, architecture and engineering decisions.",
-    images: ["/opengraph-image"],
+    images: ["/og.png"],
   },
 };
 
