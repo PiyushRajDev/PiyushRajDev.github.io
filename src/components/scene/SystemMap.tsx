@@ -12,6 +12,7 @@ type NodeKind =
 type SystemNode = {
   id: string;
   label: string;
+  shortLabel: string;
   kind: NodeKind;
   position: [number, number, number];
   description: string;
@@ -37,6 +38,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "browser",
     label: "Browser capture",
+    shortLabel: "Browser",
     kind: "transport",
     position: [-3.05, 0.05, 0.2],
     description:
@@ -45,6 +47,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "webrtc",
     label: "WebRTC transport",
+    shortLabel: "WebRTC",
     kind: "transport",
     position: [-1.72, -0.82, 0.78],
     description:
@@ -53,6 +56,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "sfu",
     label: "Media server / SFU",
+    shortLabel: "Media SFU",
     kind: "transport",
     position: [0.05, -0.05, -0.42],
     description:
@@ -61,6 +65,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "voice",
     label: "Vāk voice pipeline",
+    shortLabel: "Vāk pipeline",
     kind: "project",
     position: [1.72, 0.86, 0.62],
     description:
@@ -69,6 +74,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "oasix",
     label: "OASIX agents",
+    shortLabel: "OASIX",
     kind: "project",
     position: [-0.82, 1.65, 0.9],
     description:
@@ -77,6 +83,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "slh",
     label: "SkillLighthouse workers",
+    shortLabel: "SkillLighthouse",
     kind: "project",
     position: [2.82, 0.7, -0.46],
     description:
@@ -85,6 +92,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "metaspace",
     label: "MetaSpace room state",
+    shortLabel: "MetaSpace",
     kind: "project",
     position: [-2.1, 1.1, -0.86],
     description:
@@ -93,6 +101,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "redis",
     label: "Redis / transient state",
+    shortLabel: "Redis",
     kind: "state",
     position: [0.35, -1.72, 0.7],
     description:
@@ -101,6 +110,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "postgres",
     label: "PostgreSQL / durable state",
+    shortLabel: "PostgreSQL",
     kind: "state",
     position: [1.92, -1.62, -0.58],
     description:
@@ -109,6 +119,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "observability",
     label: "Observability",
+    shortLabel: "Observability",
     kind: "observability",
     position: [0.28, 2.35, -0.9],
     description:
@@ -117,6 +128,7 @@ const NODES: readonly SystemNode[] = [
   {
     id: "localhost",
     label: "localhost",
+    shortLabel: "localhost",
     kind: "environment",
     position: [-3.15, -1.72, -0.92],
     description:
@@ -418,10 +430,12 @@ export function SystemMap() {
         // Compact name plates follow each projected node.
         const labelFont = Math.max(8, Math.min(10, width / 54));
         context.font = `600 ${labelFont}px ${fontFamily}`;
-        const labelWidth = context.measureText(node.label).width + 14;
+        const labelWidth = context.measureText(node.shortLabel).width + 14;
         const labelHeight = labelFont + 9;
         const labelX = x - labelWidth / 2;
-        const labelY = y + radius + 6;
+        const labelY = NODES.indexOf(node) % 2 === 0
+          ? y + radius + 6
+          : y - radius - labelHeight - 5;
 
         context.globalAlpha = 0.9;
         context.fillStyle = palette.paper;
@@ -433,7 +447,7 @@ export function SystemMap() {
         context.fillStyle = selected ? palette.accent : color;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(node.label, x, labelY + labelHeight / 2 + 0.2);
+        context.fillText(node.shortLabel, x, labelY + labelHeight / 2 + 0.2);
       }
 
       // Header text inside the plot.
@@ -636,8 +650,12 @@ export function SystemMap() {
     pausedRef.current = next;
     setPaused(next);
 
-    if (next) stopAnimation();
-    else startLoopRef.current();
+    if (next) {
+      stopAnimation();
+      drawNowRef.current();
+    } else {
+      startLoopRef.current();
+    }
   };
 
   const resetCamera = () => {
