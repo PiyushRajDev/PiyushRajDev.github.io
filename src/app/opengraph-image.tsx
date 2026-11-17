@@ -184,7 +184,7 @@ export default async function OpenGraphImage() {
               position: "relative",
             }}
           >
-            <div style={{ width: "540px", height: "330px", position: "relative" }}>
+            <div style={{ width: "540px", height: "330px", position: "relative", display: "flex" }}>
               <svg width="540" height="330" viewBox="0 0 520 310">
               <g>{graphLines}</g>
               {graphNodes.map((node) => (
