@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 type NodeKind =
   | "transport"
@@ -223,10 +223,10 @@ export function SystemMap() {
   } | null>(null);
   const drawNowRef = useRef<() => void>(() => undefined);
   const animationRef = useRef(0);
+  const startLoopRef = useRef<() => void>(() => undefined);
 
   const [selectedId, setSelectedId] = useState("voice");
   const [paused, setPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   const selectedNode =
     NODES.find((node) => node.id === selectedId) ?? NODES[0];
@@ -258,8 +258,6 @@ export function SystemMap() {
     let fontFamily = getComputedStyle(canvas).fontFamily;
     let lastFrame = 0;
     let disposed = false;
-
-    const nodeById = new Map(NODES.map((node) => [node.id, node]));
 
     const draw = (timestamp = performance.now()) => {
       if (disposed || width <= 0 || height <= 0) return;
@@ -492,6 +490,8 @@ export function SystemMap() {
       }
     };
 
+    startLoopRef.current = start;
+
     const stop = () => {
       if (animationRef.current) {
         window.cancelAnimationFrame(animationRef.current);
@@ -534,13 +534,11 @@ export function SystemMap() {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handleMotion = (event: MediaQueryListEvent) => {
       reducedMotionRef.current = event.matches;
-      setReducedMotion(event.matches);
       if (event.matches) stop();
       else start();
     };
 
     reducedMotionRef.current = motionQuery.matches;
-    setReducedMotion(motionQuery.matches);
     motionQuery.addEventListener("change", handleMotion);
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("resize", resize);
@@ -560,7 +558,7 @@ export function SystemMap() {
     };
   }, [stopAnimation]);
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId);
     draggingRef.current = {
       pointerId: event.pointerId,
@@ -570,7 +568,7 @@ export function SystemMap() {
     };
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = draggingRef.current;
 
     if (drag && drag.pointerId === event.pointerId) {
@@ -605,7 +603,7 @@ export function SystemMap() {
     }
   };
 
-  const handlePointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerUp = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = draggingRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
 
@@ -639,7 +637,7 @@ export function SystemMap() {
     setPaused(next);
 
     if (next) stopAnimation();
-    else drawNowRef.current();
+    else startLoopRef.current();
   };
 
   const resetCamera = () => {
