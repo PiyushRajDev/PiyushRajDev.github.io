@@ -115,6 +115,7 @@ export default async function OpenGraphImage() {
             >
               <img
                 src={avatarSrc}
+                alt="Piyush Raj portrait"
                 width="112"
                 height="112"
                 style={{
@@ -183,7 +184,8 @@ export default async function OpenGraphImage() {
               position: "relative",
             }}
           >
-            <svg width="540" height="330" viewBox="0 0 520 310">
+            <div style={{ width: "540px", height: "330px", position: "relative" }}>
+              <svg width="540" height="330" viewBox="0 0 520 310">
               <g>{graphLines}</g>
               {graphNodes.map((node) => (
                 <g key={node.id}>
@@ -210,18 +212,30 @@ export default async function OpenGraphImage() {
                     strokeWidth="1"
                     opacity="0.75"
                   />
-                  <text
-                    x={node.x}
-                    y={node.y + 27}
-                    fill="#B7AFA4"
-                    fontSize="9"
-                    textAnchor="middle"
-                  >
-                    {node.label}
-                  </text>
+
                 </g>
               ))}
-            </svg>
+              </svg>
+              {graphNodes.map((node) => (
+                <div
+                  key={`${node.id}-label`}
+                  style={{
+                    position: "absolute",
+                    left: `${(node.x / 520) * 540}px`,
+                    top: `${((node.y + 27) / 310) * 330}px`,
+                    width: "90px",
+                    marginLeft: "-45px",
+                    color: "#B7AFA4",
+                    fontSize: "9px",
+                    lineHeight: 1,
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {node.label}
+                </div>
+              ))}
+            </div>
             <div
               style={{
                 position: "absolute",
