@@ -175,11 +175,11 @@ function getPalette(canvas: HTMLCanvasElement): Palette {
     secondary: read("--secondary", "#A29E94"),
     hairline: read("--hairline", "rgba(255,255,255,.15)"),
     accent: read("--accent", "#FF5A1F"),
-    transport: read("--map-transport", "#A29E94"),
-    project: read("--map-project", "#EDEAE2"),
-    state: read("--map-state", "#C8C1B6"),
-    observability: read("--map-observability", "#FF5A1F"),
-    environment: read("--map-environment", "#827D75"),
+    transport: read("--map-transport", "#756A5C"),
+    project: read("--map-project", "#24211D"),
+    state: read("--map-state", "#968B7E"),
+    observability: read("--map-observability", "#E94F24"),
+    environment: read("--map-environment", "#81776C"),
   };
 }
 
@@ -359,7 +359,7 @@ export function SystemMap() {
 
         const isSelected =
           selectedRef.current === edge.from || selectedRef.current === edge.to;
-        context.globalAlpha = isSelected ? 0.72 : 0.28 + (from.depth + to.depth + 2) * 0.07;
+        context.globalAlpha = isSelected ? 0.92 : 0.42 + (from.depth + to.depth + 2) * 0.055;
         context.strokeStyle = isSelected ? palette.accent : palette.secondary;
         context.lineWidth = isSelected ? 1.25 : 0.8;
         context.beginPath();
@@ -373,7 +373,7 @@ export function SystemMap() {
           const progress = ((timestamp / 5200 + edgeIndex * 0.173) % 1 + 1) % 1;
           const packetX = from.x + (to.x - from.x) * progress;
           const packetY = from.y + (to.y - from.y) * progress;
-          context.globalAlpha = 0.86;
+          context.globalAlpha = 0.92;
           context.fillStyle = palette.accent;
           context.beginPath();
           context.arc(packetX, packetY, 2.1, 0, Math.PI * 2);
@@ -402,15 +402,15 @@ export function SystemMap() {
         glow.addColorStop(0, color);
         glow.addColorStop(1, "rgba(0,0,0,0)");
 
-        context.globalAlpha = 0.23;
+        context.globalAlpha = 0.11;
         context.fillStyle = glow;
         context.beginPath();
         context.arc(x, y, haloRadius, 0, Math.PI * 2);
         context.fill();
 
-        context.globalAlpha = selected ? 0.92 : 0.5;
+        context.globalAlpha = selected ? 1 : 0.72;
         context.strokeStyle = color;
-        context.lineWidth = selected ? 1.1 : 0.7;
+        context.lineWidth = selected ? 1.4 : 0.95;
         context.beginPath();
         context.arc(x, y, radius * (selected ? 2.05 : 1.75), 0, Math.PI * 2);
         context.stroke();
@@ -438,16 +438,31 @@ export function SystemMap() {
         context.font = `600 ${labelFont}px ${fontFamily}`;
         const labelWidth = context.measureText(node.shortLabel).width + 14;
         const labelHeight = labelFont + 12;
-        const labelX = x - labelWidth / 2;
-        const labelY = NODES.indexOf(node) % 2 === 0
-          ? y + radius + 8
-          : y - radius - labelHeight - 8;
+        const labelX = Math.max(
+          8,
+          Math.min(width - labelWidth - 8, x - labelWidth / 2),
+        );
+        const placeAbove = new Set([
+          "webrtc",
+          "slh",
+          "metaspace",
+          "observability",
+          "redis",
+        ]).has(node.id);
+        const preferredLabelY = placeAbove
+          ? y - radius - labelHeight - 9
+          : y + radius + 9;
+        const labelY = Math.max(
+          12,
+          Math.min(height - labelHeight - 12, preferredLabelY),
+        );
 
-        context.globalAlpha = 0.94;
+        context.globalAlpha = 0.98;
         context.fillStyle = palette.paper;
         context.fillRect(labelX, labelY, labelWidth, labelHeight);
-        context.globalAlpha = 0.3;
+        context.globalAlpha = 0.72;
         context.strokeStyle = palette.hairline;
+        context.lineWidth = 0.8;
         context.strokeRect(labelX, labelY, labelWidth, labelHeight);
         context.globalAlpha = 1;
         context.fillStyle = selected ? palette.accent : palette.ink;
