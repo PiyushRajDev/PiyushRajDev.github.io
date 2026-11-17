@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// Generate this image during `next build` so GitHub Pages receives a static PNG.
 export const dynamic = "force-static";
 export const alt =
   "Piyush Raj — Backend Systems Engineer portfolio preview";
