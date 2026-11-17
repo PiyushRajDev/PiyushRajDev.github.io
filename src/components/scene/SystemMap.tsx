@@ -175,11 +175,11 @@ function getPalette(canvas: HTMLCanvasElement): Palette {
     secondary: read("--secondary", "#A29E94"),
     hairline: read("--hairline", "rgba(255,255,255,.15)"),
     accent: read("--accent", "#FF5A1F"),
-    transport: read("--map-transport", "#5DA7EE"),
-    project: read("--map-project", "#42B86B"),
-    state: read("--map-state", "#B887E8"),
-    observability: read("--map-observability", "#F18A3A"),
-    environment: read("--map-environment", "#9299A1"),
+    transport: read("--map-transport", "#A29E94"),
+    project: read("--map-project", "#EDEAE2"),
+    state: read("--map-state", "#C8C1B6"),
+    observability: read("--map-observability", "#FF5A1F"),
+    environment: read("--map-environment", "#827D75"),
   };
 }
 
@@ -206,12 +206,15 @@ function projectPoint(
   rotation: { x: number; y: number },
 ): { x: number; y: number; depth: number; scale: number } {
   const rotated = rotatePoint(point, rotation);
-  const unit = Math.min(width / 7.3, height / 4.65);
+  // Independent horizontal/vertical scales keep the whole graph legible
+  // instead of shrinking its width to fit a short canvas.
+  const unitX = width / 7.8;
+  const unitY = height / 5.4;
   const perspective = CAMERA_DISTANCE / (CAMERA_DISTANCE - rotated.z);
 
   return {
-    x: width / 2 + rotated.x * unit * perspective,
-    y: height * 0.48 - rotated.y * unit * perspective,
+    x: width / 2 + rotated.x * unitX * perspective,
+    y: height * 0.5 - rotated.y * unitY * perspective,
     depth: rotated.z,
     scale: perspective,
   };
@@ -330,7 +333,10 @@ export function SystemMap() {
           x: point.x,
           y: point.y,
           depth: point.depth,
-          radius: Math.max(5, Math.min(14, 9.5 * point.scale)),
+          radius: Math.max(
+            8,
+            Math.min(17, Math.min(width / 46, height / 22)),
+          ),
         };
       });
 
@@ -368,7 +374,7 @@ export function SystemMap() {
           const packetX = from.x + (to.x - from.x) * progress;
           const packetY = from.y + (to.y - from.y) * progress;
           context.globalAlpha = 0.86;
-          context.fillStyle = palette.project;
+          context.fillStyle = palette.accent;
           context.beginPath();
           context.arc(packetX, packetY, 2.1, 0, Math.PI * 2);
           context.fill();
@@ -428,23 +434,23 @@ export function SystemMap() {
         context.fill();
 
         // Compact name plates follow each projected node.
-        const labelFont = Math.max(8, Math.min(10, width / 54));
+        const labelFont = Math.max(9, Math.min(12, width / 48));
         context.font = `600 ${labelFont}px ${fontFamily}`;
         const labelWidth = context.measureText(node.shortLabel).width + 14;
-        const labelHeight = labelFont + 9;
+        const labelHeight = labelFont + 12;
         const labelX = x - labelWidth / 2;
         const labelY = NODES.indexOf(node) % 2 === 0
-          ? y + radius + 6
-          : y - radius - labelHeight - 5;
+          ? y + radius + 8
+          : y - radius - labelHeight - 8;
 
-        context.globalAlpha = 0.9;
+        context.globalAlpha = 0.94;
         context.fillStyle = palette.paper;
         context.fillRect(labelX, labelY, labelWidth, labelHeight);
         context.globalAlpha = 0.3;
         context.strokeStyle = palette.hairline;
         context.strokeRect(labelX, labelY, labelWidth, labelHeight);
-        context.globalAlpha = 0.96;
-        context.fillStyle = selected ? palette.accent : color;
+        context.globalAlpha = 1;
+        context.fillStyle = selected ? palette.accent : palette.ink;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(node.shortLabel, x, labelY + labelHeight / 2 + 0.2);
