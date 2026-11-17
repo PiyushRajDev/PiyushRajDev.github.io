@@ -2698,3 +2698,11 @@ button {
   }
 }
 
+
+:root.theme-light .system-map {
+  --map-transport: var(--secondary);
+  --map-project: var(--ink);
+  --map-state: color-mix(in srgb, var(--ink) 72%, var(--paper));
+  --map-observability: var(--accent);
+  --map-environment: color-mix(in srgb, var(--secondary) 55%, var(--paper));
+}
