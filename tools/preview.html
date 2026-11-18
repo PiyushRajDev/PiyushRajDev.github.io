@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Systems Duel — Animation Preview</title>
+<style>
+  :root { color-scheme: dark; --bg:#10100f; --panel:#191816; --bone:#eee9de; --muted:#8d887f; --red:#c5483b; --line:#46423b; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; padding:28px; background:var(--bg); color:var(--bone); font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  main { width:min(1440px,100%); margin:0 auto; }
+  header { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:18px; border-bottom:1px solid var(--line); padding-bottom:14px; }
+  h1 { margin:0; font-size:18px; letter-spacing:.14em; font-weight:700; }
+  header p { margin:6px 0 0; color:var(--muted); font-size:11px; letter-spacing:.08em; }
+  .tag { color:var(--red); font-size:11px; letter-spacing:.12em; }
+  .stage { overflow:hidden; border:1px solid var(--line); background:#090909; box-shadow:0 20px 65px #0008; }
+  object { display:block; width:100%; aspect-ratio:1280/520; background:#090909; }
+  .toolbar { display:grid; grid-template-columns:auto minmax(180px,1fr) auto auto; align-items:center; gap:14px; padding:14px; background:var(--panel); border:1px solid var(--line); border-top:0; }
+  button,select { color:var(--bone); background:#11100f; border:1px solid #5b554c; border-radius:2px; padding:9px 12px; font:inherit; cursor:pointer; }
+  button:hover,select:hover { border-color:var(--red); }
+  input[type=range] { width:100%; accent-color:var(--red); cursor:pointer; }
+  .time { min-width:92px; color:var(--bone); font-variant-numeric:tabular-nums; text-align:right; }
+  .markers { display:flex; flex-wrap:wrap; gap:7px; padding:12px 0 0; }
+  .markers button { padding:7px 9px; color:var(--muted); font-size:10px; letter-spacing:.04em; }
+  .markers button strong { color:var(--red); font-weight:600; margin-right:6px; }
+  .help { margin-top:18px; color:var(--muted); font-size:11px; }
+  @media(max-width:760px) {
+    body { padding:14px; }
+    header { align-items:flex-start; flex-direction:column; }
+    .toolbar { grid-template-columns:auto 1fr; }
+    .time { text-align:left; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>SYS//ARENA — ANIMATION PREVIEW</h1>
+      <p>Scrub the 32-second SVG timeline. Inspect each combat beat before publishing.</p>
+    </div>
+    <div class="tag">P.R. / BUILD 001</div>
+  </header>
+  <section class="stage" aria-label="Animated SVG preview">
+    <object id="scene" type="image/svg+xml" data="../assets/bug-vs-dev.svg" aria-label="Piyush Raj animated boss fight"></object>
+  </section>
+  <section class="toolbar" aria-label="Timeline controls">
+    <button id="play" type="button">Ⅱ Pause</button>
+    <input id="timeline" type="range" min="0" max="32" step="0.01" value="0" aria-label="Animation time">
+    <select id="speed" aria-label="Playback speed">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.5">1.5×</option>
+      <option value="2">2×</option>
+    </select>
+    <output class="time" id="time">00:00.00 / 00:32.00</output>
+  </section>
+  <nav class="markers" aria-label="Choreography markers">
+    <button data-time="0.5"><strong>00.5</strong>BOOT</button>
+    <button data-time="2.8"><strong>02.8</strong>FIGHT</button>
+    <button data-time="5.9"><strong>05.9</strong>PARRY</button>
+    <button data-time="7.5"><strong>07.5</strong>DODGE</button>
+    <button data-time="10.2"><strong>10.2</strong>3-HIT COMBO</button>
+    <button data-time="14.4"><strong>14.4</strong>COUNTER</button>
+    <button data-time="17.5"><strong>17.5</strong>CHARGE</button>
+    <button data-time="19.8"><strong>19.8</strong>MARGIN STORM</button>
+    <button data-time="23.8"><strong>23.8</strong>K.O.</button>
+    <button data-time="26"><strong>26.0</strong>VICTORY</button>
+    <button data-time="30.8"><strong>30.8</strong>RESET</button>
+  </nav>
+  <p class="help">Run from the repository root with <code>python -m http.server 8000</code>, then open <code>http://localhost:8000/tools/preview.html</code>.</p>
+</main>
+<script>
+(() => {
+  const scene = document.getElementById('scene');
+  const play = document.getElementById('play');
+  const slider = document.getElementById('timeline');
+  const speed = document.getElementById('speed');
+  const output = document.getElementById('time');
+  const duration = 32;
+  let root = null;
+  let playing = false;
+  let current = 0;
+  let last = 0;
+  let raf = 0;
+
+  const format = value => {
+    const minutes = Math.floor(value / 60);
+    const seconds = (value % 60).toFixed(2).padStart(5, '0');
+    return `${String(minutes).padStart(2, '0')}:${seconds}`;
+  };
+  const paint = value => {
+    current = Math.max(0, Math.min(duration, value));
+    if (root) root.setCurrentTime(current);
+    slider.value = String(current);
+    output.value = `${format(current)} / ${format(duration)}`;
+    output.textContent = output.value;
+  };
+  const stop = () => {
+    playing = false;
+    cancelAnimationFrame(raf);
+    play.textContent = '▶ Play';
+  };
+  const tick = now => {
+    if (!playing || !root) return;
+    if (last) current += ((now - last) / 1000) * Number(speed.value);
+    if (current >= duration) current %= duration;
+    last = now;
+    paint(current);
+    raf = requestAnimationFrame(tick);
+  };
+  const start = () => {
+    if (!root) return;
+    playing = true;
+    last = 0;
+    play.textContent = 'Ⅱ Pause';
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(tick);
+  };
+
+  scene.addEventListener('load', () => {
+    try {
+      root = scene.contentDocument.documentElement;
+      root.pauseAnimations();
+      paint(0);
+      start();
+    } catch (error) {
+      output.textContent = 'SVG preview unavailable — serve this page over localhost.';
+    }
+  });
+  play.addEventListener('click', () => playing ? stop() : start());
+  slider.addEventListener('input', () => { stop(); last = 0; paint(Number(slider.value)); });
+  speed.addEventListener('change', () => { last = 0; });
+  document.querySelectorAll('[data-time]').forEach(button => {
+    button.addEventListener('click', () => {
+      stop();
+      last = 0;
+      paint(Number(button.dataset.time));
+    });
+  });
+  window.addEventListener('beforeunload', () => cancelAnimationFrame(raf));
+})();
+</script>
+</body>
+</html>
