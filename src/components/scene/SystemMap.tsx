@@ -163,6 +163,7 @@ const KIND_LABELS: Record<NodeKind, string> = {
 const DEFAULT_ROTATION = { x: -0.2, y: 0.24 };
 const CAMERA_DISTANCE = 8.6;
 const MAX_PIXEL_RATIO = 1.6;
+const COMPACT_WIDTH = 520;
 
 function getPalette(canvas: HTMLCanvasElement): Palette {
   const styles = getComputedStyle(canvas);
@@ -208,13 +209,15 @@ function projectPoint(
   const rotated = rotatePoint(point, rotation);
   // Independent horizontal/vertical scales keep the whole graph legible
   // instead of shrinking its width to fit a short canvas.
+  // Narrow canvases get a little extra vertical headroom for the plot header.
+  const compact = width < COMPACT_WIDTH;
   const unitX = width / 7.8;
-  const unitY = height / 5.4;
+  const unitY = height / (compact ? 6.1 : 5.4);
   const perspective = CAMERA_DISTANCE / (CAMERA_DISTANCE - rotated.z);
 
   return {
     x: width / 2 + rotated.x * unitX * perspective,
-    y: height * 0.5 - rotated.y * unitY * perspective,
+    y: height * (compact ? 0.53 : 0.5) - rotated.y * unitY * perspective,
     depth: rotated.z,
     scale: perspective,
   };
@@ -276,6 +279,7 @@ export function SystemMap() {
 
     const draw = (timestamp = performance.now()) => {
       if (disposed || width <= 0 || height <= 0) return;
+      const compact = width < COMPACT_WIDTH;
 
       context.clearRect(0, 0, width, height);
       context.save();
@@ -438,10 +442,6 @@ export function SystemMap() {
         context.font = `600 ${labelFont}px ${fontFamily}`;
         const labelWidth = context.measureText(node.shortLabel).width + 14;
         const labelHeight = labelFont + 12;
-        const labelX = Math.max(
-          8,
-          Math.min(width - labelWidth - 8, x - labelWidth / 2),
-        );
         const placeAbove = new Set([
           "webrtc",
           "slh",
@@ -449,11 +449,26 @@ export function SystemMap() {
           "observability",
           "redis",
         ]).has(node.id);
-        const preferredLabelY = placeAbove
-          ? y - radius - labelHeight - 9
-          : y + radius + 9;
+        // Keep plates clear of the in-plot header line. A node that wants
+        // its plate above but sits too close to the top gets it beside
+        // itself instead, so it never covers its own sphere.
+        const minLabelY = compact ? 26 : 12;
+        const aboveY = y - radius - labelHeight - 9;
+        const besideNode = placeAbove && aboveY < minLabelY;
+        const preferredLabelX = besideNode
+          ? x + radius + 8
+          : x - labelWidth / 2;
+        const preferredLabelY = besideNode
+          ? y - labelHeight / 2
+          : placeAbove
+            ? aboveY
+            : y + radius + 9;
+        const labelX = Math.max(
+          8,
+          Math.min(width - labelWidth - 8, preferredLabelX),
+        );
         const labelY = Math.max(
-          12,
+          minLabelY,
           Math.min(height - labelHeight - 12, preferredLabelY),
         );
 
@@ -468,7 +483,11 @@ export function SystemMap() {
         context.fillStyle = selected ? palette.accent : palette.ink;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(node.shortLabel, x, labelY + labelHeight / 2 + 0.2);
+        context.fillText(
+          node.shortLabel,
+          labelX + labelWidth / 2,
+          labelY + labelHeight / 2 + 0.2,
+        );
       }
 
       // Header text inside the plot.
@@ -477,9 +496,15 @@ export function SystemMap() {
       context.textAlign = "left";
       context.textBaseline = "top";
       context.font = `9px ${fontFamily}`;
-      context.fillText("DRAG TO ROTATE  /  SELECT A NODE", 10, 9);
-      context.textAlign = "right";
-      context.fillText("EVENT FLOW · SIMULATED", width - 10, 9);
+      context.fillText(
+        compact ? "DRAG TO ROTATE · SELECT A NODE" : "DRAG TO ROTATE  /  SELECT A NODE",
+        10,
+        9,
+      );
+      if (!compact) {
+        context.textAlign = "right";
+        context.fillText("EVENT FLOW · SIMULATED", width - 10, 9);
+      }
 
       context.restore();
     };

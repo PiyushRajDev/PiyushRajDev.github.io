@@ -244,8 +244,12 @@ export function CommandPalette() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-keyshortcuts="Control+K Meta+K"
+        aria-label="Open command menu"
       >
-        <span>COMMANDS</span>
+        <span className="palette-trigger__label">COMMANDS</span>
+        <span className="palette-trigger__label-short" aria-hidden="true">
+          MENU
+        </span>
         <kbd>⌘ / CTRL K</kbd>
       </button>
 

@@ -35,7 +35,10 @@ export function ThemeToggle() {
       aria-pressed={theme === "dark"}
     >
       <span className="theme-toggle__indicator" aria-hidden="true" />
-      <span>LIGHT / DARK</span>
+      <span className="theme-toggle__label">LIGHT / DARK</span>
+      <span className="theme-toggle__label-short" aria-hidden="true">
+        {theme === "dark" ? "LIGHT" : "DARK"}
+      </span>
     </button>
   );
 }
